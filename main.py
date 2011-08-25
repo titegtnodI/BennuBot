@@ -1,7 +1,5 @@
 import threading, time, socket
-#BennuBot V1.0.2
 #TODO Garbage collection for unused "outMSG" data.
-#TODO Make general functions call every loop and let them handle timeouts.
 #TODO Clean up plugins
 #TODO Permissions instead of just admins
 
@@ -29,6 +27,8 @@ plugAdmins = None
 inMSG = []
 #MSG, Protocol, Server, Channel (May be "None")
 outMSG = []
+
+change = False
 
 #TODO
 #Timestamp
@@ -95,6 +95,23 @@ def isAdmin(inMSG):
 		return False
 	return True
 
+#Handles general plugins
+class handleGenFunc(threading.Thread):
+
+	def __init__(self, command=None):
+		self.command = command
+		threading.Thread.__init__(self)
+
+	def run(self):
+		global outMSG
+		for i in genFuncs:
+			try:
+				i(self.command)
+			except:
+				#TODO Output function name which had the error.
+				outMSG += [['A plugin had an error.', self.command[1], self.command[2],
+						self.command[3]]]		
+
 #Parses a command.
 class parseCommand(threading.Thread):
 
@@ -123,14 +140,6 @@ class parseCommand(threading.Thread):
 				if not quiet:
 					outMSG += [['Invalid command.', self.command[1], self.command[2],
 						self.command[3]]]
-		else:
-			for i in genFuncs:
-				try:
-					i(self.command)
-				except:
-					#TODO Output function name which had the error.
-					outMSG += [['A plugin had an error.', self.command[1], self.command[2],
-						self.command[3]]]
 
 log('Loading Protocols...')
 loadProtocols()
@@ -138,9 +147,15 @@ log('Loading Plugins...')
 loadPlugins()
 
 while True:
-	change = False
+	if not change:
+		#General plugins should prepare for "None".
+		handleGenFunc().start()
+		#As long as plugins are handling their timeouts properly 10ms should be plenty.
+		time.sleep(0.01)
+	else:
+		change = False
 	for i in inMSG:
 		if not change: change = True
 		parseCommand(i).start()
+		handleGenFunc(i).start()
 		del inMSG[0]
-	if not change: time.sleep(.01)
