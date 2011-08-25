@@ -1,4 +1,3 @@
-import sys
 plugName = 'Local Python Exec'
 
 def load():
@@ -14,4 +13,3 @@ def localPythonExec(inMSG):
 		outMSG += [['Done.', inMSG[1], inMSG[2], inMSG[3]]]
 	except Exception as e:
 		outMSG += [[str(e), inMSG[1], inMSG[2], inMSG[3]]]
-		#outMSG += [[sys.exc_info()[0], inMSG[1], inMSG[2], inMSG[3]]]
