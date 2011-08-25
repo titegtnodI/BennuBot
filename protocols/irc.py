@@ -1,7 +1,8 @@
-#TODO: SSL
+#TODO SSL
 plugName = 'IRC'
 plugAdmins = {'irc':['titegtnodI!~titegtnod@rainbows.inafire.com']}
 
+#TODO Update channels upon ";irc join".
 IRCconnections = [[('irc.pho3n1x.net', 6667), '#bottest']]
 IRCsocks = []
 IRCdie = False
