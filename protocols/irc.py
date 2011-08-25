@@ -1,3 +1,4 @@
+#Version 1.0.0
 #TODO SSL
 plugName = 'IRC'
 plugAdmins = {'irc':['titegtnodI!~titegtnod@rainbows.inafire.com']}
@@ -56,7 +57,7 @@ class ircConnectionHandler(threading.Thread):
 					break
 
 				for i in range(len(data)):
-					if i+2 == len(data):
+					if i+2 >= len(data):
 						msg = ''
 						break
 					if data[i+1] == ':':
