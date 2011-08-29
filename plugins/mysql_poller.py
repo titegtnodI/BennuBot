@@ -18,9 +18,10 @@ def load():
 	return mysqlPoller
 
 def mysqlPoller(inMSG):
+	global mysqlPollerLast
 	if time.time() - mysqlPollerFrequency < mysqlPollerLast:
 		return
-	global outMSG, mysqlPollerLast
+	global outMSG
 	db = _mysql.connect(mysqlPollerSetup[1], mysqlPollerSetup[2], mysqlPollerSetup[3],
 		mysqlPollerSetup[4])
 	db.query('SELECT '+mysqlPollerSetup[6]+' FROM '+mysqlPollerSetup[5]+' ORDER BY '+
