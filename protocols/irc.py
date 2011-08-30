@@ -1,10 +1,11 @@
-#Version 1.0.0
 #TODO SSL
 plugName = 'IRC'
 plugAdmins = {'irc':['titegtnodI!~titegtnod@rainbows.inafire.com']}
 
-#TODO Update channels upon ";irc join".
-IRCconnections = [[('irc.pho3n1x.net', 6667), '#bottest']]
+#TODO Handle join fails properly.
+#TODO Update channels upon kick.
+#TODO Handle nick changes properly (If nick change fails).
+IRCconnections = [[('irc.pho3n1x.net', 6667), '#bottest', nick]]
 IRCsocks = []
 IRCdie = False
 
@@ -88,17 +89,35 @@ def ircCommandHandler(inMSG):
 		return
 	if command == 'send':
 		outMSG += [[inMSG[0][inMSG[0].index(msg[2])+len(msg[2])+1:], inMSG[1], inMSG[2], msg[2]]]
-	elif command == 'join' or command == 'nick' or command == 'raw':
-		try:
-			if command != 'raw':
-				IRCsocks[inMSG[2]].send(command.upper() + ' ' + msg[2] + '\r\n')
-			else:
-				IRCsocks[inMSG[2]].send(inMSG[0][inMSG[0].index('raw')+4:] + '\r\n')
-		except:
-			outMSG += [['Error.', inMSG[1], inMSG[2], inMSG[3]]]
 	elif command == 'die':
 		IRCdie = True
 		del protocols['irc']
+	else:
+		try:
+			if command == 'join':
+				if msg[2][0] != '#':
+					msg[2] = '#' + msg[2]
+				IRCsocks[inMSG[2]].send(command.upper() + ' ' + msg[2] + '\r\n')
+				if IRCconnections[inMSG[2]][1] != '':
+					IRCconnections[inMSG[2]][1] += ',' + msg[2]
+				else:
+					IRCconnections[inMSG[2]][1] = msg[2]
+			elif command == 'part':
+				if msg[2][0] != '#':
+					msg[2] = '#' + msg[2]
+				IRCsocks[inMSG[2]].send(command.upper() + ' ' + msg[2] + ' ' +
+					inMSG[0][inMSG[0].index(msg[2])+len(msg[2])+1:] + '\r\n')
+				chanArray = IRCconnections[inMSG[2]][1].split(',')
+				if msg[2] in chanArray:
+					del chanArray[chanArray.index(msg[2])]
+					IRCconnections[inMSG[2]][1] = ','.join(chanArray)
+			elif command == 'nick':
+				IRCsocks[inMSG[2]].send(command.upper() + ' ' + msg[2] + '\r\n')
+				IRCconnections[inMSG[2]][2] = msg[2]
+			elif command == 'raw':
+				IRCsocks[inMSG[2]].send(inMSG[0][inMSG[0].index('raw')+4:] + '\r\n')
+		except:
+			outMSG += [['Error.', inMSG[1], inMSG[2], inMSG[3]]]
 		
 
 def load():
@@ -110,4 +129,8 @@ def load():
 		time.sleep(.1)
 	ircSendHandler().start()
 	#TODO Handle commands
+q
+q
+q
+q
 	return {'irc':ircCommandHandler}
