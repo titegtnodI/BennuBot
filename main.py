@@ -1,13 +1,17 @@
 import threading, time, socket
 #TODO Garbage collection for unused "outMSG" data.
-#TODO Clean up plugins
 #TODO Permissions instead of just admins
+#TODO Remote plugin loading (via plugin)
+#TODO Alternative hash authentication
+#TODO Ability to shutdown bot (via plugin)
 
-#CONSTANTS #TODO Stop using constants
-PROTOCOLS = ['protocols/irc.py'] #Protocols to be loaded
-PLUGINS   = ['plugins/say.py', 'plugins/mysql_poller.py', 'plugins/pyexec.py'] #Plugins to be loaded
+#These will be loaded from protoFolder and plugFolder respectively.
+protoList = ['irc.py'] #Protocols to be loaded
+plugList  = ['say.py', 'pyexec.py'] #Plugins to be loaded
 
-#GLOBALS
+protoFolder = 'protocols/'
+plugFolder   = 'plugins/'
+
 nick = 'BennuBot'
 
 quiet = True
@@ -38,16 +42,16 @@ def log(text):
 	try: print text
 	except: None
 
-#Load all protocols from "PROTOCOLS".
+#Load all protocols from "protoList".
 def loadProtocols():
 	global protocols, plugName, load, plugAdmins, admins
 	protocols = {}
-	for i in PROTOCOLS:
+	for i in protoList:
 		plugName = None
 		load = None
 		plugAdmins = None
 		try:
-			eval(compile(open(i, 'U').read(), i, 'exec'), globals())
+			eval(compile(open(protoFolder + i, 'U').read(), i, 'exec'), globals())
 			if plugName: i = plugName
 			if not load:
 				log('Protocol \"' + i + '\" must define \'load\'.')
@@ -61,16 +65,16 @@ def loadProtocols():
 		except:
 			log('Protocol \"' + i + '\" failed to load.')
 
-#Load all plugins from "PLUGINS".
+#Load all plugins from "plugList".
 def loadPlugins():
 	global funcs, genFuncs, plugName, load
 	funcs = {}
 	genFuncs = []
-	for i in PLUGINS:
+	for i in plugList:
 		plugName = None
 		load = None
 		try:
-			eval(compile(open(i, 'U').read(), i, 'exec'), globals())
+			eval(compile(open(plugFolder + i, 'U').read(), i, 'exec'), globals())
 			if plugName: i = plugName
 			if not load:
 				log('Plugin \"' + i + '\" must define \'load\'.')
