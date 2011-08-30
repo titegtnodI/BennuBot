@@ -128,9 +128,4 @@ def load():
 		ircConnectionHandler(i).start()
 		time.sleep(.1)
 	ircSendHandler().start()
-	#TODO Handle commands
-q
-q
-q
-q
 	return {'irc':ircCommandHandler}
