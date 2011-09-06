@@ -5,6 +5,7 @@ plugAdmins = {'irc':['titegtnodI!~titegtnod@rainbows.inafire.com']}
 #TODO Handle join fails properly.
 #TODO Update channels upon kick.
 #TODO Handle nick changes properly (If nick change fails).
+#TODO Announce a successful ";irc die"
 IRCconnections = [[('irc.pho3n1x.net', 6667), '#bottest', nick]]
 IRCsocks = []
 IRCdie = False
