@@ -4,6 +4,7 @@ import threading, time, socket
 #TODO Remote plugin loading (via plugin)
 #TODO Alternative hash authentication
 #TODO Ability to shutdown bot (via plugin)
+#TODO Store things into a database accessable by plugins
 
 #These will be loaded from protoFolder and plugFolder respectively.
 protoList = ['irc.py'] #Protocols to be loaded
@@ -113,8 +114,8 @@ class handleGenFunc(threading.Thread):
 				i(self.command)
 			except:
 				#TODO Output function name which had the error.
-				outMSG += [['A plugin had an error.', self.command[1], self.command[2],
-						self.command[3]]]		
+				outMSG.append(['A plugin had an error.', self.command[1], self.command[2],
+						self.command[3]])		
 
 #Parses a command.
 class parseCommand(threading.Thread):
@@ -127,23 +128,25 @@ class parseCommand(threading.Thread):
 		global outMSG
 		if len(self.command[0]) > 1 and self.command[0][0] == funcPrefix:
 			try:
-				funcs[self.command[0].split()[0][1:].lower()](self.command)
+				funcs[self.command[0].split(None, 1)[0][len(funcPrefix):].lower()](
+					self.command)
 			except:
 				if not quiet:
-					outMSG += [['Invalid command.', self.command[1], self.command[2],
-						self.command[3]]]
+					outMSG.append(['Invalid command.', self.command[1], self.command[2],
+						self.command[3]])
 		elif len(self.command[0]) > 1 and self.command[0][0] == protoPrefix:
 			if not isAdmin(self.command):
 				if not quiet:
-					outMSG += [['Not authorized.', self.command[1], self.command[2],
-							self.command[3]]]
-				return	
+					outMSG.append(['Not authorized.', self.command[1], self.command[2],
+							self.command[3]])
+				return
 			try:
-				protocols[self.command[0].split()[0][1:].lower()](self.command)
+				protocols[self.command[0].split(None, 1)[0][len(protoPrefix):].lower()](
+					self.command)
 			except:
 				if not quiet:
-					outMSG += [['Invalid command.', self.command[1], self.command[2],
-						self.command[3]]]
+					outMSG.append(['Invalid command.', self.command[1], self.command[2],
+						self.command[3]])
 
 log('Loading Protocols...')
 loadProtocols()

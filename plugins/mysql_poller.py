@@ -33,8 +33,8 @@ def mysqlPoller(inMSG):
 		for i in mysqlPollerSetup[7]:
 			db.query('SELECT ' +i+' FROM '+mysqlPollerSetup[5]+' WHERE '+
 				mysqlPollerSetup[6]+'='+str(mysqlPollerSetup[8]+1))
-			outMSG += [['- Field \"'+i+'\": ' + db.use_result().fetch_row()[0][0],
-					inMSG[1], inMSG[2], inMSG[3]]]
+			outMSG.append(['- Field \"'+i+'\": ' + db.use_result().fetch_row()[0][0],
+					inMSG[1], inMSG[2], inMSG[3]])
 		mysqlPollerSetup[8] = int(result)
 	db.close()
 	mysqlPollerLast = time.time()

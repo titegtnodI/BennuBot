@@ -18,21 +18,12 @@ class ircSendHandler(threading.Thread):
 			if len(outMSG) == 0:
 				time.sleep(0.05)
 			else:
-				nCount = 0
-				for i in xrange(len(outMSG)):
-					if len(outMSG[i]) > 1 and outMSG[i][1] == 'irc':
-						IRCsocks[outMSG[i][2]].send('PRIVMSG ' + outMSG[i][3] + ' :' + outMSG[i][0] + '\r\n')
-						outMSG[i] = None
-						nCount += 1
-				index = 0
-				while nCount > 0:
-					if not outMSG[index]:
-						del outMSG[index]
-						nCount -= 1
-					else:
-						index += 1
+				localMSG = outMSG
+				for i in xrange(len(localMSG)):
+					if len(localMSG[i]) > 1 and localMSG[i][1] == 'irc':
+						IRCsocks[localMSG[i][2]].send('PRIVMSG ' + localMSG[i][3] + ' :' + localMSG[i][0] + '\r\n')
+						outMSG.remove(localMSG[i])
 				
-
 class ircConnectionHandler(threading.Thread):
 
 	def __init__(self, i):
@@ -65,18 +56,23 @@ class ircConnectionHandler(threading.Thread):
 					if data[i+1] == ':':
 						msg = data[i+2:-2]
 						break
-				if data.strip() != '':
+				if data.strip() == '':
+					continue
+				else:
 					data = data.split()
-				elif data[0] == 'PING':
+				if data[0] == 'PING':
 					IRCsocks[self.i].send('PONG ' + data[1][1:] + '\r\n')
 				elif len(data) > 1 and len(data[1]) == 3 and data[1][:3] == '001':
 					IRCsocks[self.i].send('JOIN ' + IRCconnections[self.i][1] + '\r\n')
 				else:
 					try:
 						if data[2][0] == '#':
-							inMSG += [[msg, 'irc', self.i, data[2], data[0].split('!')[0][1:], data[0][1:]]]
+							inMSG.append([msg, 'irc', self.i, data[2],
+								data[0].split('!')[0][1:], data[0][1:]])
 						else:
-							inMSG += [[msg, 'irc', self.i, data[0].split('!')[0][1:], data[0].split('!')[0][1:], data[0][1:]]]
+							tNick = data[0].split('!')[0][1:]
+							inMSG.append([msg, 'irc', self.i, tNick, tNick,
+								data[0][1:]])
 					except:
 						None
 		IRCsocks[self.i].shutdown(socket.SHUT_RDWR)
@@ -90,7 +86,7 @@ def ircCommandHandler(inMSG):
 	else:
 		return
 	if command == 'send':
-		outMSG += [[inMSG[0][inMSG[0].index(msg[2])+len(msg[2])+1:], inMSG[1], inMSG[2], msg[2]]]
+		outMSG.append([inMSG[0].split(None, 3)[3], inMSG[1], inMSG[2], msg[2]])
 	elif command == 'die':
 		IRCdie = True
 		del protocols['irc']
@@ -107,8 +103,8 @@ def ircCommandHandler(inMSG):
 			elif command == 'part':
 				if msg[2][0] != '#':
 					msg[2] = '#' + msg[2]
-				IRCsocks[inMSG[2]].send(command.upper() + ' ' + msg[2] + ' ' +
-					inMSG[0][inMSG[0].index(msg[2])+len(msg[2])+1:] + '\r\n')
+				IRCsocks[inMSG[2]].send(command.upper() + ' ' + msg[2] + ' :' +
+					inMSG[0].split(None, 3)[3] + '\r\n')
 				chanArray = IRCconnections[inMSG[2]][1].split(',')
 				if msg[2] in chanArray:
 					del chanArray[chanArray.index(msg[2])]
@@ -117,9 +113,9 @@ def ircCommandHandler(inMSG):
 				IRCsocks[inMSG[2]].send(command.upper() + ' ' + msg[2] + '\r\n')
 				IRCconnections[inMSG[2]][2] = msg[2]
 			elif command == 'raw':
-				IRCsocks[inMSG[2]].send(inMSG[0][inMSG[0].index('raw')+4:] + '\r\n')
+				IRCsocks[inMSG[2]].send(inMSG[0].split(None, 2)[2] + '\r\n')
 		except:
-			outMSG += [['Error.', inMSG[1], inMSG[2], inMSG[3]]]
+			outMSG.append(['Error.', inMSG[1], inMSG[2], inMSG[3]])
 		
 
 def load():
