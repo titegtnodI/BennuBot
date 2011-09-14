@@ -19,7 +19,7 @@ class ircSendHandler(threading.Thread):
 				time.sleep(0.05)
 			else:
 				nCount = 0
-				for i in range(len(outMSG)):
+				for i in xrange(len(outMSG)):
 					if len(outMSG[i]) > 1 and outMSG[i][1] == 'irc':
 						IRCsocks[outMSG[i][2]].send('PRIVMSG ' + outMSG[i][3] + ' :' + outMSG[i][0] + '\r\n')
 						outMSG[i] = None
@@ -58,14 +58,15 @@ class ircConnectionHandler(threading.Thread):
 				if data == '':
 					break
 
-				for i in range(len(data)):
+				for i in xrange(len(data)):
 					if i+2 >= len(data):
 						msg = ''
 						break
 					if data[i+1] == ':':
 						msg = data[i+2:-2]
 						break
-				data = data.split()
+				if data.strip() != '':
+					data = data.split()
 				if data[0] == 'PING':
 					IRCsocks[self.i].send('PONG ' + data[1][1:] + '\r\n')
 				elif len(data) > 1 and len(data[1]) == 3 and data[1][:3] == '001':
@@ -124,7 +125,7 @@ def ircCommandHandler(inMSG):
 def load():
 	global IRCsocks
 	#Setup all connections for multiple servers
-	for i in range(len(IRCconnections)):
+	for i in xrange(len(IRCconnections)):
 		IRCsocks += [None]
 		ircConnectionHandler(i).start()
 		time.sleep(.1)
