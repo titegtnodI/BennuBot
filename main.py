@@ -6,6 +6,7 @@ from datetime import date
 #TODO Alternative hash authentication
 #TODO Ability to shutdown bot (via plugin)
 #TODO Store things into a database accessable by plugins
+#TODO Add things to send queue via function (Ex: sendMSG(outMSG))
 
 #These will be loaded from protoFolder and plugFolder respectively.
 protoList = ['irc.py'] #Protocols to be loaded
