@@ -1,6 +1,6 @@
 #TODO SSL
 plugName = 'IRC'
-plugAdmins = {'irc':['titegtnodI!~titegtnod@rainbows.inafire.com']}
+plugAdmins = {'irc':['titegtnodI!~titegtnod@rainbows.inafire.com','lembas!toastin@inafire.com']}
 
 #TODO Handle join fails properly.
 #TODO Update channels upon kick.
@@ -18,7 +18,9 @@ class ircSendHandler(threading.Thread):
 			if len(outMSG) == 0:
 				time.sleep(0.05)
 			else:
-				localMSG = outMSG
+				localMSG = []
+				for i in outMSG:
+					localMSG.append(i)
 				for i in xrange(len(localMSG)):
 					if len(localMSG[i]) > 1 and localMSG[i][1] == 'irc':
 						IRCsocks[localMSG[i][2]].send('PRIVMSG ' + localMSG[i][3] + ' :' + localMSG[i][0] + '\r\n')
