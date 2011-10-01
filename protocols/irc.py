@@ -64,7 +64,7 @@ class ircConnectionHandler(threading.Thread):
 					data = data.split()
 				if data[0] == 'PING':
 					IRCsocks[self.i].send('PONG ' + data[1][1:] + '\r\n')
-				elif len(data) > 1 and len(data[1]) == 3 and data[1][:3] == '001':
+				elif len(data) > 1 and len(data[1]) >= 3 and data[1][:3] == '001':
 					IRCsocks[self.i].send('JOIN ' + IRCconnections[self.i][1] + '\r\n')
 				else:
 					try:
