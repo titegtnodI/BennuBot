@@ -12,7 +12,7 @@ from datetime import date
 
 #These will be loaded from protoFolder and plugFolder respectively.
 protoList = ['irc.py'] #Protocols to be loaded
-plugList  = ['say.py', 'pyexec.py', 'irc_commands.py'] #Plugins to be loaded
+plugList  = ['say.py', 'pyexec.py', 'irc_commands.py', 'time.py'] #Plugins to be loaded
 
 protoFolder = 'protocols/'
 plugFolder   = 'plugins/'
