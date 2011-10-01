@@ -7,10 +7,12 @@ from datetime import date
 #TODO Ability to shutdown bot (via plugin)
 #TODO Store things into a database accessable by plugins
 #TODO Add things to send queue via function (Ex: sendMSG(outMSG))
+#TODO Pass sendqueue messages to gen plugins before queuing them (via thread ofc)
+#TODO Use wildcards for hostname matching
 
 #These will be loaded from protoFolder and plugFolder respectively.
 protoList = ['irc.py'] #Protocols to be loaded
-plugList  = ['say.py', 'pyexec.py'] #Plugins to be loaded
+plugList  = ['say.py', 'pyexec.py', 'irc_commands.py'] #Plugins to be loaded
 
 protoFolder = 'protocols/'
 plugFolder   = 'plugins/'
