@@ -46,54 +46,67 @@ def log(text):
 	except: None
 	open('log', 'a').write(msg + '\r\n')
 
+def loadProtocol(location, name):
+	global protocols, plugName, load, plugAdmins, admins
+	plugName = None
+	load = None
+	plugAdmins = None
+	try:
+		eval(compile(open(location, 'U').read(), name, 'exec'), globals())
+		if plugName: name = plugName
+		if not load:
+			log('Protocol \"' + name + '\" must define \'load\'.')
+			return False
+		protocols = dict(protocols.items() + load().items())
+	except:
+		log('Protocol \"' + name + '\" failed to load.')
+		return False
+	try:
+		admins = dict(admins.items() + plugAdmins.items())
+	except:
+		log('Protocol \"' + name + '\" has not specified any admins.')
+	log('Protocol \"' + name + '\" loaded.')
+	return True	
+
 #Load all protocols from "protoList".
 def loadProtocols():
-	global protocols, plugName, load, plugAdmins, admins
+	global protocols
 	protocols = {}
 	for i in protoList:
-		plugName = None
-		load = None
-		plugAdmins = None
-		try:
-			eval(compile(open(protoFolder + i, 'U').read(), i, 'exec'), globals())
-			if plugName: i = plugName
-			if not load:
-				log('Protocol \"' + i + '\" must define \'load\'.')
-				continue
-			protocols = dict(protocols.items() + load().items())
-			try:
-				admins = dict(admins.items() + plugAdmins.items())
-			except:
-				log('Protocol \"' + i + '\" has not specified any admins.')
-			log('Protocol \"' + i + '\" loaded.')
-		except:
-			log('Protocol \"' + i + '\" failed to load.')
+		loadProtocol(protoFolder + i, i)
+
+def loadPlugin(location, name):
+	global funcs, genFuncs, plugName, load
+	plugName = None
+	load = None
+	try:
+		eval(compile(open(location, 'U').read(), name, 'exec'), globals())
+		if plugName: name = plugName
+		if not load:
+			log('Plugin \"' + name + '\" must define \'load\'.')
+			return False
+		plugin = load()
+		if type(plugin).__name__ == 'dict':
+			funcs = dict(funcs.items() + plugin.items())
+		elif type(plugin).__name__ == 'function':
+			genFuncs += [plugin]
+		else:
+			log('Plugin \"' + name + '\" must return \'dict\' or \'function\'.')
+			return False
+	except:
+		log('Plugin \"' + name + '\" failed to load.')
+		return False
+
+	log('Plugin \"' + name + '\" loaded.')
+	return True		
 
 #Load all plugins from "plugList".
 def loadPlugins():
-	global funcs, genFuncs, plugName, load
+	global funcs, genFuncs
 	funcs = {}
 	genFuncs = []
 	for i in plugList:
-		plugName = None
-		load = None
-		try:
-			eval(compile(open(plugFolder + i, 'U').read(), i, 'exec'), globals())
-			if plugName: i = plugName
-			if not load:
-				log('Plugin \"' + i + '\" must define \'load\'.')
-				continue
-			plugin = load()
-			if type(plugin).__name__ == 'dict':
-				funcs = dict(funcs.items() + plugin.items())
-			elif type(plugin).__name__ == 'function':
-				genFuncs += [plugin]
-			else:
-				log('Plugin \"' + i + '\" must return \'dict\' or \'function\'.')
-				continue
-			log('Plugin \"' + i + '\" loaded.')
-		except:
-			log('Plugin \"' + i + '\" failed to load.')
+		loadPlugin(plugFolder + i, i)
 
 def isAdmin(inMSG):
 	try:
