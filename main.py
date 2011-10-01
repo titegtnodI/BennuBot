@@ -1,4 +1,4 @@
-import threading, time, socket
+import threading, time, socket, re
 from datetime import date
 #TODO Garbage collection for unused "outMSG" data.
 #TODO Permissions instead of just admins
@@ -8,7 +8,6 @@ from datetime import date
 #TODO Store things into a database accessable by plugins
 #TODO Add things to send queue via function (Ex: sendMSG(outMSG))
 #TODO Pass sendqueue messages to gen plugins before queuing them (via thread ofc)
-#TODO Use wildcards for hostname matching
 
 #These will be loaded from protoFolder and plugFolder respectively.
 protoList = ['irc.py'] #Protocols to be loaded
@@ -110,11 +109,12 @@ def loadPlugins():
 
 def isAdmin(inMSG):
 	try:
-		if not inMSG[5] in admins[inMSG[1]]:
-			return False
+		for i in admins[inMSG[1]]:
+			if re.search(re.sub('\\\\\\*', '.*', re.escape(i)), inMSG[5]):
+				return True
 	except:
 		return False
-	return True
+	return False
 
 #Handles general plugins
 class handleGenFunc(threading.Thread):
