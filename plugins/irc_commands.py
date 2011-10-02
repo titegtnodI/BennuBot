@@ -10,7 +10,6 @@ def irc_unavailable(inMSG):
 
 def irc_set(inMSG, mode):
 	if inMSG[1] != 'irc' or not isAdmin(inMSG): return
-	global outMSG
 	arrayMSG = inMSG[0].split()
 	if len(arrayMSG) == 1:
 		IRCsocks[inMSG[2]].send('mode ' + inMSG[3] + ' ' + mode + ' ' + inMSG[4] + '\r\n')
@@ -19,9 +18,15 @@ def irc_set(inMSG, mode):
 	elif len(arrayMSG) == 3:
 		IRCsocks[inMSG[2]].send('mode ' + arrayMSG[2] + ' ' + mode + ' ' + arrayMSG[1] + '\r\n')
 
+def irc_action(inMSG):
+	if inMSG[1] != 'irc': return
+	global outMSG
+	outMSG.append(['\x01ACTION ' + inMSG[0].split(None, 1)[1] + '\x01', inMSG[1], inMSG[2], inMSG[3]])
+
 def load():
 	return {'op':(lambda x:irc_set(x, '+o')), 'deop':(lambda x:irc_set(x, '-o')),
 		'hop':(lambda x:irc_set(x, '+h')), 'dehop':(lambda x:irc_set(x, '-h')),
 		'kick':irc_unavailable, 'ban':irc_unavailable, 'kb':irc_unavailable,
 		'voice':(lambda x:irc_set(x, '+v')), 'devoice':(lambda x:irc_set(x, '-v')),
-		'admin':(lambda x:irc_set(x, '+a')), 'deadmin':(lambda x:irc_set(x, '-a'))}
+		'admin':(lambda x:irc_set(x, '+a')), 'deadmin':(lambda x:irc_set(x, '-a')),
+		'do':irc_action}
