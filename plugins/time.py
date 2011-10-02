@@ -5,7 +5,6 @@ import datetime, random
 from pytz import timezone
 
 def time_time(inMSG):
-	global outMSG
 	gmt = datetime.datetime.now(timezone("UTC")).strftime("%H:%M")
 	est = datetime.datetime.now(timezone("US/Eastern")).strftime("%H:%M")
 	cst = datetime.datetime.now(timezone("US/Central")).strftime("%H:%M")
@@ -18,7 +17,7 @@ def time_time(inMSG):
 	eet = datetime.datetime.now(timezone("Europe/Istanbul")).strftime("%H:%M")
 	hkt = datetime.datetime.now(timezone("Asia/Hong_Kong")).strftime("%H:%M")
 
-	outMSG.append(["\x0305Times:\x0f " +
+	sendMSG("\x0305Times:\x0f " +
 		"\x0302GMT\x0f: \x0303" + gmt + "\x0f" +
 			" \x0301|\x0f " +
 		"\x0302PST\x0f: \x0314" + pst + "\x0f" +
@@ -40,13 +39,12 @@ def time_time(inMSG):
 		"\x0302AEST\x0f: \x0307" + syd + "\x0f" +
 			" \x0301|\x0f " +
 		"\x0302NZST\x0f: \x0313" + nz + "\x0F"
-	, inMSG[1], inMSG[2], inMSG[3]])
+	, inMSG[1], inMSG[2], inMSG[3])
 
 def time_tiem(inMSG):
-	global outMSG
 	gmt,est,cst,pst,mst,art,syd,nz,cest,eet,hkt = [str(random.randrange(0,3)) + str(random.randrange(0,10)) + ":" + str(random.randrange(0,6)) + str(random.randrange(0,10)) for i in xrange(11)]
 
-	outMSG.append(["\x0305Times:\x0f " +
+	sendMSG("\x0305Times:\x0f " +
 		"\x0302GMT\x0f: \x0303" + gmt + "\x0f" +
 			" \x0301|\x0f " +
 		"\x0302PST\x0f: \x0314" + pst + "\x0f" +
@@ -68,7 +66,7 @@ def time_tiem(inMSG):
 		"\x0302AEST\x0f: \x0307" + syd + "\x0f" +
 			" \x0301|\x0f " +
 		"\x0302NZST\x0f: \x0313" + nz + "\x0F"
-	, inMSG[1], inMSG[2], inMSG[3]])
+	, inMSG[1], inMSG[2], inMSG[3])
 
 def load():
 	return {'time':time_time, 'tiem':time_tiem}

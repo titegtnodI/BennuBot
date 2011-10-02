@@ -21,20 +21,19 @@ def mysqlPoller(inMSG):
 	global mysqlPollerLast
 	if time.time() - mysqlPollerFrequency < mysqlPollerLast:
 		return
-	global outMSG
 	db = _mysql.connect(mysqlPollerSetup[1], mysqlPollerSetup[2], mysqlPollerSetup[3],
 		mysqlPollerSetup[4])
 	db.query('SELECT '+mysqlPollerSetup[6]+' FROM '+mysqlPollerSetup[5]+' ORDER BY '+
 			mysqlPollerSetup[6]+' DESC LIMIT 1')
 	result = db.use_result().fetch_row()[0][0]
 	if int(result) > mysqlPollerSetup[8]:
-		outMSG += [['Table \"'+mysqlPollerSetup[5]+'\" updated: ', inMSG[1], inMSG[2],
-				inMSG[3]]]
+		sendMSG('Table \"'+mysqlPollerSetup[5]+'\" updated: ', inMSG[1], inMSG[2],
+				inMSG[3])
 		for i in mysqlPollerSetup[7]:
 			db.query('SELECT ' +i+' FROM '+mysqlPollerSetup[5]+' WHERE '+
 				mysqlPollerSetup[6]+'='+str(mysqlPollerSetup[8]+1))
-			outMSG.append(['- Field \"'+i+'\": ' + db.use_result().fetch_row()[0][0],
-					inMSG[1], inMSG[2], inMSG[3]])
+			sendMSG('- Field \"'+i+'\": ' + db.use_result().fetch_row()[0][0],
+					inMSG[1], inMSG[2], inMSG[3])
 		mysqlPollerSetup[8] = int(result)
 	db.close()
 	mysqlPollerLast = time.time()

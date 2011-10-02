@@ -4,9 +4,8 @@ plugName = 'IRC Commands'
 
 def irc_unavailable(inMSG):
 	if inMSG[1] != 'irc' or not isAdmin(inMSG): return
-	global outMSG
 	if not quiet:
-		outMSG.append(['Sorry, that command is not yet available.', inMSG[1], inMSG[2], inMSG[3]])
+		sendMSG('Sorry, that command is not yet available.', inMSG[1], inMSG[2], inMSG[3])
 
 def irc_set(inMSG, mode):
 	if inMSG[1] != 'irc' or not isAdmin(inMSG): return
@@ -20,8 +19,7 @@ def irc_set(inMSG, mode):
 
 def irc_action(inMSG):
 	if inMSG[1] != 'irc': return
-	global outMSG
-	outMSG.append(['\x01ACTION ' + inMSG[0].split(None, 1)[1] + '\x01', inMSG[1], inMSG[2], inMSG[3]])
+	sendMSG('\x01ACTION ' + inMSG[0].split(None, 1)[1] + '\x01', inMSG[1], inMSG[2], inMSG[3])
 
 def load():
 	return {'op':(lambda x:irc_set(x, '+o')), 'deop':(lambda x:irc_set(x, '-o')),

@@ -81,14 +81,14 @@ class ircConnectionHandler(threading.Thread):
 		IRCsocks[self.i].close()
 
 def ircCommandHandler(inMSG):
-	global outMSG, IRCdie
+	global IRCdie
 	msg = inMSG[0].split()
 	if len(msg) > 1:
 		command = msg[1].lower()
 	else:
 		return
 	if command == 'send':
-		outMSG.append([inMSG[0].split(None, 3)[3], inMSG[1], inMSG[2], msg[2]])
+		sendMSG(inMSG[0].split(None, 3)[3], inMSG[1], inMSG[2], msg[2])
 	elif command == 'die':
 		IRCdie = True
 		del protocols['irc']
@@ -117,7 +117,7 @@ def ircCommandHandler(inMSG):
 			elif command == 'raw':
 				IRCsocks[inMSG[2]].send(inMSG[0].split(None, 2)[2] + '\r\n')
 		except:
-			outMSG.append(['Error.', inMSG[1], inMSG[2], inMSG[3]])
+			sendMSG('Error.', inMSG[1], inMSG[2], inMSG[3])
 		
 
 def load():
