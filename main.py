@@ -36,11 +36,11 @@ outMSG = []
 
 change = False
 
-def log(text):
+def log(text, location='log'):
 	msg = time.strftime('%Y-%m-%d %H:%M:%S') + '\t' + text
 	try: print msg
 	except: None
-	open('log', 'a').write(msg + '\r\n')
+	open(location, 'a').write(msg + '\r\n')
 
 def loadProtocol(location, name):
 	global protocols, plugName, load, plugAdmins, admins
