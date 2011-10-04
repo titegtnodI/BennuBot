@@ -17,7 +17,6 @@ def irc_set(inMSG, mode):
 def irc_kick(inMSG):
 	if inMSG[1] != 'irc' or not isAdmin(inMSG): return
 	arrayMSG = inMSG[0].split(None, 2)
-	print len(arrayMSG) > 2
 	if len(arrayMSG) == 2:
 		IRCsocks[inMSG[2]].send('kick ' + inMSG[3] + ' ' + arrayMSG[1] + '\r\n')
 	elif len(arrayMSG) > 2:
