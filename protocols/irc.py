@@ -1,6 +1,6 @@
 #TODO SSL
 plugName = 'IRC'
-plugAdmins = {'irc':['*!~titegtnod@rainbows.inafire.com','lembas!toastin@inafire.com']}
+plugAdmins = {'irc':['*!~titegtnod@rainbows.inafire.com','lembas!toastin@inafire.com','*@127.0.0.1']}
 
 #TODO Handle join fails properly.
 #TODO Update channels upon kick.
@@ -39,7 +39,9 @@ class ircConnectionHandler(threading.Thread):
 			IRCsocks[self.i].settimeout(240)
 			try:
 				IRCsocks[self.i].connect(IRCconnections[self.i][0])
-				IRCsocks[self.i].send('USER ' + nick + ' ' + nick + ' ' + nick + ' ' + nick + '\r\n')
+				IRCsocks[self.i].send('USER ' + IRCconnections[self.i][2] + ' ' +
+					IRCconnections[self.i][2] + ' ' + IRCconnections[self.i][2] + ' ' +
+					IRCconnections[self.i][2] + '\r\n')
 				IRCsocks[self.i].send('NICK ' + nick + '\r\n')
 			except:
 				continue
