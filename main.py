@@ -1,11 +1,12 @@
 import threading, time, socket, re
 from datetime import date
-#TODO Garbage collection for unused "outMSG" data.
+#TODO Garbage collection for unused "outMSG" data
 #TODO Permissions instead of just admins
 #TODO Remote plugin loading (via plugin)
 #TODO Alternative hash authentication
 #TODO Ability to shutdown bot (via plugin)
 #TODO Store things into a database accessable by plugins
+#TODO Protocol to integrate GitHub commits with JSON POST
 
 #These will be loaded from protoFolder and plugFolder respectively.
 protoList = ['irc.py'] #Protocols to be loaded
@@ -145,26 +146,30 @@ class parseCommand(threading.Thread):
 
 	def run(self):
 		if len(self.command[0]) > 1 and self.command[0][0] == funcPrefix:
-			try:
-				funcs[self.command[0].split(None, 1)[0][len(funcPrefix):].lower()](
-					self.command)
-			except:
-				if not quiet:
-					sendMSG('Invalid command.', self.command[1], self.command[2],
-						self.command[3])
+			cmd = self.command[0].split(None, 1)[0][len(funcPrefix):].lower()
+			if cmd in funcs:
+				try:
+					funcs[cmd](self.command)
+				except Exception as e:
+					sendMSG('Command \"'+cmd+'\" caused error: '+str(e)+'.',
+						self.command[1], self.command[2], self.command[3])
+			elif not quiet:
+				 sendMSG('Invalid command.', self.command[1], self.command[2], self.command[3])
 		elif len(self.command[0]) > 1 and self.command[0][0] == protoPrefix:
 			if not isAdmin(self.command):
 				if not quiet:
 					sendMSG('Not authorized.', self.command[1], self.command[2],
-							self.command[3])
-				return
-			try:
-				protocols[self.command[0].split(None, 1)[0][len(protoPrefix):].lower()](
-					self.command)
-			except:
-				if not quiet:
-					sendMSG('Invalid command.', self.command[1], self.command[2],
 						self.command[3])
+				return
+			cmd = self.command[0].split(None, 1)[0][len(protoPrefix):].lower()
+			if cmd in protocols:
+				try:
+					protocols[cmd](self.command)
+				except Exception as e:
+					sendMSG('Command \"'+cmd+'\" caused error: '+str(e)+'.',
+						self.command[1], self.command[2], self.command[3])
+			elif not quiet:
+				sendMSG('Invalid command.', self.command[1], self.command[2], self.command[3])
 
 log('Loading Protocols...')
 loadProtocols()
