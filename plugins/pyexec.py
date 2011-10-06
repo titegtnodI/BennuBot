@@ -4,7 +4,7 @@ def load():
 	return {'pyexec':localPythonExec}
 
 def localPythonExec(inMSG):
-	if not isAdmin(inMSG):
+	if getPermission(inMSG) < 1000:
 		outMSG.append(['Not authorized.', inMSG[1], inMSG[2], inMSG[3]])
 		return
 	try:

@@ -4,7 +4,9 @@
 plugName = 'IRC Commands'
 
 def irc_set(inMSG, mode):
-	if inMSG[1] != 'irc' or not isAdmin(inMSG): return
+	level = getPermission(inMSG)
+	if (inMSG[1] != 'irc' or (mode[1] == 'v' and level < 1) or (mode[1] == 'h' and level < 2) or
+		(mode[1] == 'o' and level < 3) or (mode[1] == 'a' and level < 6)): return
 	arrayMSG = inMSG[0].split()
 	if len(arrayMSG) == 1:
 		IRCsocks[inMSG[2]].send('mode ' + inMSG[3] + ' ' + mode + ' ' + inMSG[4] + '\r\n')
@@ -15,7 +17,7 @@ def irc_set(inMSG, mode):
 
 #TODO Allow for channel to be specified.
 def irc_kick(inMSG):
-	if inMSG[1] != 'irc' or not isAdmin(inMSG): return
+	if inMSG[1] != 'irc' or getPermission(inMSG) < 4: return
 	arrayMSG = inMSG[0].split(None, 2)
 	if len(arrayMSG) == 2:
 		IRCsocks[inMSG[2]].send('kick ' + inMSG[3] + ' ' + arrayMSG[1] + '\r\n')
@@ -23,7 +25,7 @@ def irc_kick(inMSG):
 		IRCsocks[inMSG[2]].send('kick ' + inMSG[3] + ' ' + arrayMSG[1] + ' :' + arrayMSG[2] + '\r\n')
 
 def irc_kickban(inMSG, plusOrMinus='+'):
-	if inMSG[1] != 'irc' or not isAdmin(inMSG): return
+	if inMSG[1] != 'irc' or getPermission(inMSG) < 5: return
 	arrayMSG = inMSG[0].split()
 	command = inMSG[0].split(None, 1)[0]
 	if 'kb' in command: irc_kick(inMSG)

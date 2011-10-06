@@ -111,14 +111,14 @@ def sendMSG(msg, protocol, server, channel):
 	global outMSG
 	outMSG.append([msg, protocol, server, channel])
 
-def isAdmin(inMSG):
+def getPermission(inMSG):
 	try:
 		for i in admins[inMSG[1]]:
-			if re.search(re.sub('\\\\\\*', '.*', re.escape(i)), inMSG[5]):
-				return True
+			if re.search(re.sub('\\\\\*', '.*', re.escape(i[0])), inMSG[5]):
+				return i[1]
 	except:
-		return False
-	return False
+		return 0
+	return 0
 
 #Handles general plugins
 class handleGenFunc(threading.Thread):
@@ -156,7 +156,7 @@ class parseCommand(threading.Thread):
 			elif not quiet:
 				 sendMSG('Invalid command.', self.command[1], self.command[2], self.command[3])
 		elif len(self.command[0]) > 1 and self.command[0][0] == protoPrefix:
-			if not isAdmin(self.command):
+			if getPermission(self.command) < 999:
 				if not quiet:
 					sendMSG('Not authorized.', self.command[1], self.command[2],
 						self.command[3])

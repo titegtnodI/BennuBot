@@ -1,6 +1,7 @@
 #TODO SSL
 plugName = 'IRC'
-plugAdmins = {'irc':['*!~titegtnod@rainbows.inafire.com','lembas!toastin@inafire.com','*@127.0.0.1']}
+plugAdmins = {'irc':[['*!~titegtnod@rainbows.inafire.com',1000],['lembas!toastin@inafire.com',1000]
+		,['*@127.0.0.1',1000]]}
 
 #TODO Handle join fails properly.
 #TODO Update channels upon kick.
@@ -42,7 +43,7 @@ class ircConnectionHandler(threading.Thread):
 				IRCsocks[self.i].send('USER ' + IRCconnections[self.i][2] + ' ' +
 					IRCconnections[self.i][2] + ' ' + IRCconnections[self.i][2] + ' ' +
 					IRCconnections[self.i][2] + '\r\n')
-				IRCsocks[self.i].send('NICK ' + nick + '\r\n')
+				IRCsocks[self.i].send('NICK ' + IRCconnections[self.i][2] + '\r\n')
 			except:
 				continue
 			while not IRCdie:
@@ -89,11 +90,14 @@ def ircCommandHandler(inMSG):
 		command = msg[1].lower()
 	else:
 		return
-	if command == 'send':
-		sendMSG(inMSG[0].split(None, 3)[3], inMSG[1], inMSG[2], msg[2])
-	elif command == 'die':
+	if command == 'die' and getPermission(inMSG) > 999:
 		IRCdie = True
 		del protocols['irc']
+	elif command == 'die':
+		sendMSG('Host \''+inMSG[5]+'\' is not authorized. This has been logged.', inMSG[1], inMSG[2],
+			inMSG[3])
+	if command == 'send':
+		sendMSG(inMSG[0].split(None, 3)[3], inMSG[1], inMSG[2], msg[2])
 	else:
 		try:
 			if command == 'join':
