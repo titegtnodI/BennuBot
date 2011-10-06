@@ -180,7 +180,11 @@ log('Entering main loop...')
 while True:
 	if not change:
 		#General plugins should prepare for "None".
-		handleGenFunc().start()
+		try:
+			handleGenFunc().start()
+		except:
+			#In case of derpy servers.
+			time.sleep(0.01)
 		#As long as plugins are handling their timeouts properly 10ms should be plenty.
 		time.sleep(0.01)
 	else:
