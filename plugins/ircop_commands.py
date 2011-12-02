@@ -58,4 +58,4 @@ def load():
 		'odvoice':(lambda x:irc_oset(x, '-v')), 'oadmin':(lambda x:irc_oset(x, '+a')),
 		'odadmin':(lambda x:irc_oset(x, '-a')), 'god':(lambda x:irc_oset(x, '+M')),
 		'mortal':(lambda x:irc_oset(x, '-M')), 'omod':(lambda x:irc_oset(x, '+m')),
-		'odmod':(lambda x:irc_oset(x, '-m'))}
+		'odmod':(lambda x:irc_oset(x, '-m')), 'kill':irc_kill, 'kline':irc_kline}
