@@ -7,7 +7,7 @@ plugAdmins = {'irc':[['*!~titegtnod@rainbows.inafire.com',1000],['lembas!toastin
 #TODO Update channels upon kick.
 #TODO Handle nick changes properly (If nick change fails).
 #TODO Announce a successful ";irc die"
-IRCconnections = [[('irc.pho3n1x.net', 6667), '#bottest', nick]]
+IRCconnections = [[('irc.pho3n1x.net', 6667), '#bottest,#pho3n1x', nick, ['PRIVMSG NickServ :id PASSWORD']]]
 IRCsocks = []
 IRCdie = False
 
@@ -24,7 +24,8 @@ class ircSendHandler(threading.Thread):
 					localMSG.append(i)
 				for i in xrange(len(localMSG)):
 					if len(localMSG[i]) > 1 and localMSG[i][1] == 'irc':
-						IRCsocks[localMSG[i][2]].send('PRIVMSG ' + localMSG[i][3] + ' :' + localMSG[i][0] + '\r\n')
+						IRCsocks[localMSG[i][2]].send('PRIVMSG ' + localMSG[i][3] +
+							' :' + localMSG[i][0] + '\r\n')
 						outMSG.remove(localMSG[i])
 				
 class ircConnectionHandler(threading.Thread):
@@ -68,6 +69,8 @@ class ircConnectionHandler(threading.Thread):
 				if data[0] == 'PING':
 					IRCsocks[self.i].send('PONG ' + data[1][1:] + '\r\n')
 				elif len(data) > 1 and len(data[1]) >= 3 and data[1][:3] == '001':
+					for i in IRCconnections[self.i][3]:
+						IRCsocks[self.i].send(i + '\r\n')
 					IRCsocks[self.i].send('JOIN ' + IRCconnections[self.i][1] + '\r\n')
 				else:
 					try:
