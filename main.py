@@ -145,16 +145,16 @@ def loadProtocol(location, name):
 	plugName = None
 	load = None
 	plugAdmins = None
-	#try:
-	eval(compile(open(location, 'U').read(), name, 'exec'), globals())
-	if plugName: name = plugName
-	if not load:
-		log('Protocol \"' + name + '\" must define \'load\'.')
+	try:
+	        eval(compile(open(location, 'U').read(), name, 'exec'), globals())
+	        if plugName: name = plugName
+	        if not load:
+	        	log('Protocol \"' + name + '\" must define \'load\'.')
+	        	return False
+	        protocols = dict(protocols.items() + load().items())
+	except:
+		log('Protocol \"' + name + '\" failed to load.')
 		return False
-	protocols = dict(protocols.items() + load().items())
-	#except:
-	#	log('Protocol \"' + name + '\" failed to load.')
-	#	return False
 	try:
 		admins = dict(admins.items() + plugAdmins.items())
 	except:
