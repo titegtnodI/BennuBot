@@ -1,6 +1,6 @@
 #TODO SSL
 plugName = 'IRC'
-plugAdmins = {'irc':[['*!~titegtnod@rainbows.inafire.com',1000],['lembas!toastin@inafire.com',1000]
+plugAdmins = {'irc':[['*!titegtnod@rainbows.inafire.com',1000],['lembas!toastin@inafire.com',1000]
 		,['*@127.0.0.1',1000]]}
 
 #TODO Handle join fails properly.
@@ -8,7 +8,6 @@ plugAdmins = {'irc':[['*!~titegtnod@rainbows.inafire.com',1000],['lembas!toastin
 #TODO Handle nick changes properly (If nick change fails).
 #TODO Announce a successful ";irc die"
 IRCconnections = [[('irc.pho3n1x.net', 6667), '#bottest,#pho3n1x', nick, ['PRIVMSG NickServ :id PASSWORD']]]
-IRCsocks = []
 IRCdie = False
 
 class ircSendHandler(threading.Thread):
@@ -83,8 +82,11 @@ class ircConnectionHandler(threading.Thread):
 								data[0][1:]])
 					except:
 						None
-		IRCsocks[self.i].shutdown(socket.SHUT_RDWR)
-		IRCsocks[self.i].close()
+                try:
+		        IRCsocks[self.i].shutdown(socket.SHUT_RDWR)
+		        IRCsocks[self.i].close()
+                except:
+                        None
 
 def ircCommandHandler(inMSG):
 	global IRCdie
@@ -130,8 +132,19 @@ def ircCommandHandler(inMSG):
 		
 
 def load():
-	global IRCsocks
-	#Setup all connections for multiple servers
+	global IRCsocks, IRCdie
+	#If connections exists, close them
+        IRCdie = True
+        try:
+                for i in IRCsocks:
+                        i.shutdown(socket.SHUT_RDWR)
+                        i.close()
+                        time.sleep(.05)
+        except:
+                None
+        IRCdie = False
+        IRCsocks = []
+        #Setup all connections for multiple servers
 	for i in xrange(len(IRCconnections)):
 		IRCsocks += [None]
 		ircConnectionHandler(i).start()
