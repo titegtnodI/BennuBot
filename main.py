@@ -1,27 +1,17 @@
-import threading, time, socket, re
+import threading, time, socket, re, sqlite3
 from datetime import date
 #TODO Garbage collection for unused "outMSG" data
-#TODO Permissions instead of just admins
 #TODO Remote plugin loading (via plugin)
 #TODO Alternative hash authentication
 #TODO Ability to shutdown bot (via plugin)
 #TODO Store things into a database accessable by plugins
 #TODO Protocol to integrate GitHub commits with JSON POST
 
-#These will be loaded from protoFolder and plugFolder respectively.
-protoList = ['irc.py'] #Protocols to be loaded
-plugList  = ['say.py', 'pyexec.py', 'irc_commands.py', 'ircop_commands.py', 'time.py',
-		'google.py', 'downloader.py'] #Plugins to be loaded
+#Database location
+dbLoc = 'db'
 
-protoFolder = 'protocols/'
-plugFolder   = 'plugins/'
-
-nick = 'BennuBot'
-
-quiet = True
-funcPrefix = '.'
-protoPrefix = ';'
-
+#Please don't change anything below this line then complain when something breaks
+version = 0
 admins = {}
 funcs = {}
 genFuncs = []
@@ -31,11 +21,6 @@ plugName = None
 load = None
 plugAdmins = None
 
-#MSG, Protocol, Server, Channel, Nick, UID (May be "None")
-inMSG = []
-#MSG, Protocol, Server, Channel (May be "None")
-outMSG = []
-
 change = False
 
 def log(text, location='log'):
@@ -44,21 +29,132 @@ def log(text, location='log'):
 	except: None
 	open(location, 'a').write(msg + '\r\n')
 
+def setSetting(table, what, to, conn=None):
+        global dbLoc
+        vStr = ''
+        tStr = ''
+
+        if not conn:
+                conn = sqlite3.connect(dbLoc)
+                dontClose = False
+        else:
+                dontClose = True
+
+        c = conn.cursor()
+
+        for i in to.items():
+                vStr += ",'%s'" % i[1]
+                if type(i[1]) is str:
+                        tType = 'text'
+                elif type(i[1]) is int:
+                        tType = 'integer'
+                elif type(i[1]) is float:
+                        tType = 'real'
+                elif type(i[1]) is type(None):
+                        tType = 'null'
+                else:
+                        tType = 'blob'
+                tStr += ",%s %s" % (i[0], tType)
+
+        c.execute("create table if not exists "+table+"(id text primary key"+tStr+")")
+        c.execute("replace into "+table+" values ('"+what+"'"+vStr+")")
+
+        conn.commit()
+
+        if not dontClose:
+                conn.close()
+
+def getSetting(table, what, conn=None):
+        global dbLoc
+        out = []
+
+        if not conn:
+                conn = sqlite3.connect(dbLoc)
+                dontClose = False
+        else:
+                dontClose = True
+
+        c = conn.cursor()
+
+        try:
+                c.execute("select * from "+table+" where id='"+what+"'")
+        except:
+                return None
+
+        for i in c:
+                out += [i]
+
+        if not dontClose:
+                conn.close()
+
+        return out
+
+def loadSettings():
+        global protoList, plugList, protoFolder, plugFolder, nick, quiet, funcPrefix, protoPrefix, inMSG
+        global outMSG
+
+        #MSG, Protocol, Server, Channel, Nick, UID (May be "None")
+        inMSG = []
+        #MSG, Protocol, Server, Channel (May be "None")
+        outMSG = []
+
+        v = getSetting("System", "version")
+        if v:
+                if int(v[0][1]) != version:
+                        log('WARNING BennuBot version different from db version')
+
+                conn = sqlite3.connect(dbLoc)
+                protoList = getSetting("System", "protoList", conn)[0][1].split(',')
+                plugList = getSetting("System", "plugList", conn)[0][1].split(',')
+                protoFolder = str(getSetting("System", "protoFolder", conn)[0][1])
+                plugFolder = str(getSetting("System", "plugFolder", conn)[0][1])
+                nick = str(getSetting("System", "nick", conn)[0][1])
+                quiet = str(getSetting("System", "quiet", conn)[0][1])
+                funcPrefix = str(getSetting("System", "funcPrefix", conn)[0][1])
+                protoPrefix = str(getSetting("System", "protoPrefix", conn)[0][1])
+                conn.close()
+        else:
+                log("No db found, making a new one...")
+                protoList = ['irc.py'] #Protocols to be loaded
+                plugList  = ['say.py', 'pyexec.py', 'irc_commands.py', 'ircop_commands.py', 'time.py',
+                        'google.py', 'downloader.py', 'remoteadmin.py'] #Plugins to be loaded
+
+                protoFolder = 'protocols/'
+                plugFolder   = 'plugins/'
+
+                nick = 'BennuBot'
+
+                quiet = True
+                funcPrefix = '.'
+                protoPrefix = ';'
+
+                conn = sqlite3.connect(dbLoc)
+                setSetting("System", "version", {"Value":version}, conn)
+                setSetting("System", "protoList", {"Value":','.join(protoList)}, conn)
+                setSetting("System", "plugList", {"Value":','.join(plugList)}, conn)
+                setSetting("System", "protoFolder", {"Value":protoFolder}, conn)
+                setSetting("System", "plugFolder", {"Value":plugFolder}, conn)
+                setSetting("System", "nick", {"Value":nick}, conn)
+                setSetting("System", "quiet", {"Value":int(quiet)}, conn)
+                setSetting("System", "funcPrefix", {"Value":funcPrefix}, conn)
+                setSetting("System", "protoPrefix", {"Value":protoPrefix}, conn)
+                conn.close()
+
 def loadProtocol(location, name):
 	global protocols, plugName, load, plugAdmins, admins
 	plugName = None
 	load = None
 	plugAdmins = None
-	try:
-		eval(compile(open(location, 'U').read(), name, 'exec'), globals())
-		if plugName: name = plugName
-		if not load:
-			log('Protocol \"' + name + '\" must define \'load\'.')
-			return False
-		protocols = dict(protocols.items() + load().items())
-	except:
-		log('Protocol \"' + name + '\" failed to load.')
+	#try:
+	eval(compile(open(location, 'U').read(), name, 'exec'), globals())
+	if plugName: name = plugName
+	if not load:
+		log('Protocol \"' + name + '\" must define \'load\'.')
 		return False
+	protocols = dict(protocols.items() + load().items())
+	#except:
+	#	log('Protocol \"' + name + '\" failed to load.')
+	#	return False
 	try:
 		admins = dict(admins.items() + plugAdmins.items())
 	except:
@@ -172,6 +268,8 @@ class parseCommand(threading.Thread):
 			elif not quiet:
 				sendMSG('Invalid command.', self.command[1], self.command[2], self.command[3])
 
+log('Loading Settings...')
+loadSettings()
 log('Loading Protocols...')
 loadProtocols()
 log('Loading Plugins...')
