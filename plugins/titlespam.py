@@ -3,12 +3,12 @@ plugName = 'Title Spam'
 
 #Only supports Niconico atm
 def titlespam_spamTitle(inMSG):
-        if not inMSG or not 'video.niconico.com/watch/' in inMSG[0]:
+        if not inMSG or (not 'niconico.com/watch/' in inMSG[0]:
                 return
         splitMSG = inMSG[0].split()
         url = ''
         for i in splitMSG:
-                if 'video.niconico.com/watch/' in i:
+                if 'niconico.com/watch/' in i:
                         url = i
                         break
         try:
