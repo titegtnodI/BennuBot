@@ -1,6 +1,6 @@
 #TODO SSL
 plugName = 'IRC'
-plugAdmins = {'irc':[['*!titegtnod@rainbows.inafire.com',1000],['lembas!toastin@inafire.com',1000]
+plugAdmins = {'irc':[['*titegtnod*@rainbows.inafire.com',1000],['lembas!toastin@inafire.com',1000]
 		,['*@127.0.0.1',1000]]}
 
 #TODO Handle join fails properly.
