@@ -136,7 +136,8 @@ def loadSettings():
                 log("No db found, making a new one...")
                 protoList = ['irc.py'] #Protocols to be loaded
                 plugList  = ['say.py', 'pyexec.py', 'irc_commands.py', 'ircop_commands.py', 'time.py',
-                        'google.py', 'downloader.py', 'remoteadmin.py', 'titlespam.py'] #Plugins to be loaded
+                             'google.py', 'downloader.py', 'remoteadmin.py', 'titlespam.py', 'tell.py'] 
+                                       #Plugins to be loaded
 
                 protoFolder = 'protocols/'
                 plugFolder   = 'plugins/'
