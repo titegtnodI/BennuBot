@@ -246,7 +246,10 @@ class parseCommand(threading.Thread):
 			cmd = self.command[0].split(None, 1)[0][len(funcPrefix):].lower()
 			if cmd in funcs:
 				try:
-					funcs[cmd](self.command)
+					result = funcs[cmd](self.command)
+                                        if result:
+                                                sendMSG(result, self.command[1], self.command[2],
+                                                        self.command[3])
 				except Exception as e:
 					sendMSG('Command \"'+cmd+'\" caused error: '+str(e)+'.',
 						self.command[1], self.command[2], self.command[3])
@@ -261,7 +264,10 @@ class parseCommand(threading.Thread):
 			cmd = self.command[0].split(None, 1)[0][len(protoPrefix):].lower()
 			if cmd in protocols:
 				try:
-					protocols[cmd](self.command)
+					result = protocols[cmd](self.command)
+                                        if result:
+                                                sendMSG(result, self.command[1], self.command[2],
+                                                        self.command[3])
 				except Exception as e:
 					sendMSG('Command \"'+cmd+'\" caused error: '+str(e)+'.',
 						self.command[1], self.command[2], self.command[3])
