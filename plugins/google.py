@@ -10,7 +10,10 @@ def google_search(query, method):
 		urlencode({'q':query})).read())
 
 def google_firstResult(inMSG, method):
-	result = google_search(inMSG[0].split(None, 1)[1], method)['responseData']['results']
+	splitMSG = inMSG[0].split(None, 1)
+        if len(splitMSG) != 2:
+                return 'Usage: .g <search>'
+        result = google_search(inMSG[0].split(None, 1)[1], method)['responseData']['results']
 	if result:
 		sendMSG((result[0]['titleNoFormatting'] + ' -- ' + result[0]['unescapedUrl']).encode('utf-8'),
 			inMSG[1], inMSG[2], inMSG[3])
