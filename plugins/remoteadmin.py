@@ -23,7 +23,6 @@ def remote_setSysSetting(inMSG):
         if getPermission(inMSG) < 1000:
                 return
         splitMSG = inMSG[0].split(None, 2)
-        print splitMSG
         if len(splitMSG) == 3:
                 setSetting("System", splitMSG[1], {"Value":splitMSG[2]})
                 sendMSG("Set "+splitMSG[1]+" to "+splitMSG[2], inMSG[1], inMSG[2], inMSG[3])
