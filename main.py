@@ -29,8 +29,28 @@ def log(text, location='log'):
 	except: None
 	open(location, 'a').write(msg + '\r\n')
 
+def delSetting(table, what, conn=None):
+        if not conn:
+                conn = sqlite3.connect(dbLoc)
+                dontClose = False
+        else:
+                dontClose = True
+
+        c = conn.cursor()
+
+        try:
+                c.execute("delete from "+table+" where id='"+what+"'")
+        except:
+                return False
+
+        conn.commit()
+
+        if not dontClose:
+                conn.close()
+
+        return True
+
 def setSetting(table, what, to, conn=None):
-        global dbLoc
         vStr = ''
         tStr = ''
 
@@ -65,7 +85,6 @@ def setSetting(table, what, to, conn=None):
                 conn.close()
 
 def getSetting(table, what, conn=None):
-        global dbLoc
         out = []
 
         if not conn:
@@ -79,7 +98,7 @@ def getSetting(table, what, conn=None):
         try:
                 c.execute("select * from "+table+" where id='"+what+"'")
         except:
-                return None
+                return False
 
         for i in c:
                 out += [i]
