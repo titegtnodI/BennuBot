@@ -9,10 +9,10 @@ def tell_tell(inMSG):
         if message and message[0][1].split('\xff') > 9:
                 return msg[1] + ' has enough tells.'
         if message:
-                messages = message[0][1] + '\x7f' + msg[2]
+                messages = message[0][1] + '\x7f' + msg[2].replace('\'', '')
                 authors = message[0][2] + '\x7f' + inMSG[4]
         else:
-                messages = msg[2]
+                messages = msg[2].replace('\'', '')
                 authors = inMSG[4]
 
         setSetting('Tell', msg[1], {'Messages':messages, 'Authors':authors})
