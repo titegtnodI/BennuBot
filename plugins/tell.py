@@ -6,7 +6,7 @@ def tell_tell(inMSG):
                 return 'Usage: '+funcPrefix+'tell <nick> <msg>'
 
         message = getSetting('Tell', inMSG[4])
-        if message and message[0][1].split('\xff') > 9:
+        if message and message[0][1].split('\x7f') > 9:
                 return msg[1] + ' has enough tells.'
         if message:
                 messages = message[0][1] + '\x7f' + msg[2].replace('\'', '')
