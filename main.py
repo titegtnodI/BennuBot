@@ -1,10 +1,7 @@
 import threading, time, socket, re, sqlite3
 from datetime import date
 #TODO Garbage collection for unused "outMSG" data
-#TODO Remote plugin loading (via plugin)
 #TODO Alternative hash authentication
-#TODO Ability to shutdown bot (via plugin)
-#TODO Store things into a database accessable by plugins
 #TODO Protocol to integrate GitHub commits with JSON POST
 
 #Database location
