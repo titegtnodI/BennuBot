@@ -1,13 +1,16 @@
 import urllib2
 plugName = 'Title Spam'
 
-def titlespam_nnVideoInfo(data, tTag, dTag):
+def titlespam_nnVideoInfo(data, tTag, dTag, case=None):
         try:
                 pos = data.index(tTag)+len(tTag)
         except:
                 return None, None
-        case = tTag[-1]
-        title = data[pos:data[pos:].index(case)+pos]
+
+        if not case:
+                case = tTag[-1]
+        #TODO Use regex
+        title = data[pos:data[pos:].index(case)+pos].replace('\\', '').replace('&quot;', '"')
         pos = data[pos:].index(dTag)+len(dTag)+pos
         description = data[pos:data[pos:].index(case)+pos].replace('\n', ' ').replace(
                       '&amp;', '&').replace('&quot;', '"').replace('&lt;', '<').replace(
@@ -35,7 +38,7 @@ def titlespam_spamTitle(inMSG):
         if 'video' in url:
                 title, description = titlespam_nnVideoInfo(data, 'title" content="', 'description" content="')
         elif 'live' in url:
-                title, description = titlespam_nnVideoInfo(data, "title:        '", "description:  '")
+                title, description = titlespam_nnVideoInfo(data, "title:        '", "description:  '", "',")
         else:
                 return
 
