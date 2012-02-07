@@ -120,5 +120,6 @@ def remote_unloadProtocol(inMSG):
 def load():
 	return {'shutdown':remote_shutdown, 'restart':remote_restart, 'setsys':remote_setSysSetting,
                 'settings':remote_reloadSettings, 'plugins':remote_reloadPlugins,
-                'protocols':remote_reloadProtocols, 'plugin':remote_loadPlugin, 'rmplugin':remote_unloadPlugin,
-                'protocol':remote_loadProtocol, 'rmprotocol':remote_unloadProtocol}
+                'protocols':remote_reloadProtocols, 'plugin':remote_loadPlugin,
+                'rmplugin':remote_unloadPlugin, 'protocol':remote_loadProtocol,
+                'rmprotocol':remote_unloadProtocol}
