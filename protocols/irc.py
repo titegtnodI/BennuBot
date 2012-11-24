@@ -134,17 +134,17 @@ def ircCommandHandler(inMSG):
 def load():
     global IRCsocks, IRCdie
     #If connections exists, close them
-        IRCdie = True
-        try:
-                for i in IRCsocks:
-                        i.shutdown(socket.SHUT_RDWR)
-                        i.close()
-                        time.sleep(.05)
-        except:
-                None
-        IRCdie = False
-        IRCsocks = []
-        #Setup all connections for multiple servers
+    IRCdie = True
+    try:
+        for i in IRCsocks:
+            i.shutdown(socket.SHUT_RDWR)
+            i.close()
+            time.sleep(.05)
+    except:
+        None
+    IRCdie = False
+    IRCsocks = []
+    #Setup all connections for multiple servers
     for i in xrange(len(IRCconnections)):
         IRCsocks += [None]
         ircConnectionHandler(i).start()
