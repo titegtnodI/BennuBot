@@ -27,7 +27,7 @@ def remote_setSysSetting(inMSG):
                 setSetting("System", splitMSG[1], {"Value":splitMSG[2]})
                 sendMSG("Set "+splitMSG[1]+" to "+splitMSG[2], inMSG[1], inMSG[2], inMSG[3])
         else:
-                sendMSG("Usage: .setsys <var> <value>")
+                sendMSG("Usage: "+funcPrefix+"setsys <var> <value>", inMSG[1], inMSG[2], inMSG[3])
 
 def remote_reloadSettings(inMSG):
         if getPermission(inMSG) < 1000:
