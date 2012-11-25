@@ -222,7 +222,7 @@ def loadPlugins():
 
 #Sends message
 def sendMSG(msg, protocol, server, channel):
-    handleGenFunc([msg, protocol, server, channel]).start()
+    handleGenFuncs([msg, protocol, server, channel])
     global outMSG
     outMSG.append([msg, protocol, server, channel])
 
@@ -235,22 +235,31 @@ def getPermission(inMSG):
         return 0
     return 0
 
-#Handles general plugins
+#Handles throwing the general functions into threads
+def handleGenFuncs(command=None):
+    for i in genFuncs:
+        try:
+            handleGenFunc(i, command).start()
+        except:
+            if not quiet:
+                sendMSG('Error starting a general function. Too many threads?', self.command[1],
+                        self.command[2], self.command[3])
+            time.sleep(0.01)
+
+#Handles running the general functions
 class handleGenFunc(threading.Thread):
 
-    def __init__(self, command=None):
+    def __init__(self, func, command=None):
         self.command = command
+        self.func = func
         threading.Thread.__init__(self)
 
     def run(self):
-        global outMSG
-        for i in genFuncs:
-            try:
-                i(self.command)
-            except:
-                #TODO Output function name which had the error.
-                outMSG.append(['A plugin had an error.', self.command[1], self.command[2],
-                        self.command[3]])       
+        try:
+            self.func(self.command)
+        except:
+            #TODO Output function name which had the error.
+            sendMSG('A plugin had an error.', self.command[1], self.command[2], self.command[3])       
 
 #Parses a command.
 class parseCommand(threading.Thread):
@@ -301,11 +310,7 @@ log('Entering main loop...')
 while True:
     if not change:
         #General plugins should prepare for "None".
-        try:
-            handleGenFunc().start()
-        except:
-            #In case of derpy servers.
-            time.sleep(0.01)
+        handleGenFuncs()
         #As long as plugins are handling their timeouts properly 10ms should be plenty.
         time.sleep(0.01)
     else:
@@ -313,5 +318,5 @@ while True:
     for i in inMSG:
         if not change: change = True
         parseCommand(i).start()
-        handleGenFunc(i).start()
+        handleGenFuncs(i)
         del inMSG[0]
