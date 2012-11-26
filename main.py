@@ -242,8 +242,8 @@ def handleGenFuncs(command=None):
             handleGenFunc(i, command).start()
         except:
             if not quiet:
-                sendMSG('Error starting a general function. Too many threads?', self.command[1],
-                        self.command[2], self.command[3])
+                outMSG.append(['Error starting a general function. Too many threads?', self.command[1],
+                        self.command[2], self.command[3]])
             time.sleep(0.01)
 
 #Handles running the general functions
@@ -259,7 +259,7 @@ class handleGenFunc(threading.Thread):
             self.func(self.command)
         except:
             #TODO Output function name which had the error.
-            sendMSG('A plugin had an error.', self.command[1], self.command[2], self.command[3])       
+            outMSG.append(['A plugin had an error.', self.command[1], self.command[2], self.command[3]])       
 
 #Parses a command.
 class parseCommand(threading.Thread):
