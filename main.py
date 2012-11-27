@@ -299,7 +299,7 @@ class parseCommand(threading.Thread):
         threading.Thread.__init__(self)
 
     def run(self):
-        if len(self.command[0]) > 1 and self.command[0][0] == funcPrefix:
+        if len(self.command[0]) > 1 and self.command[0][:len(funcPrefix)] == funcPrefix:
             cmd = self.command[0].split(None, 1)[0][len(funcPrefix):].lower()
             if cmd in funcs:
                 try:
@@ -311,7 +311,7 @@ class parseCommand(threading.Thread):
                         self.command[1], self.command[2], self.command[3])
             elif not quiet:
                  sendMSG('Invalid command.', self.command[1], self.command[2], self.command[3])
-        elif len(self.command[0]) > 1 and self.command[0][0] == protoPrefix:
+        elif len(self.command[0]) > 1 and self.command[0][:len(protoPrefix)] == protoPrefix:
             if getPermission(self.command) < 999:
                 if not quiet:
                     sendMSG('Not authorized.', self.command[1], self.command[2],
