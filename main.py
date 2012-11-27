@@ -8,7 +8,7 @@ from datetime import date
 dbLoc = 'db'
 
 #Please don't change anything below this line then complain when something breaks
-version = 0
+version = 1
 admins = {}
 funcs = {}
 genFuncs = []
@@ -107,7 +107,7 @@ def getSetting(table, what, conn=None):
 
 def loadSettings():
     global protoList, plugList, protoFolder, plugFolder, nick, quiet, funcPrefix, protoPrefix, inMSG
-    global outMSG
+    global outMSG, mainWait
 
     #MSG, Protocol, Server, Channel, Nick, UID (May be "None")
     inMSG = []
@@ -117,7 +117,16 @@ def loadSettings():
     v = getSetting("System", "version")
     if v:
         if int(v[0][1]) != version:
-            log('WARNING BennuBot version different from db version')
+            log('WARNING BennuBot version different from db version (Current: '+str(v[0][1])+' Expected: '+
+                str(version)+')')
+            log('Attempting to run patch to address potential issues')
+            try:
+                name = str(v[0][1]) + '_' + str(version) + '.py'
+                eval(compile(open('Patches/'+name, 'U').read(), name, 'exec'), globals())
+                log('Patch appears to have executed successfully')
+                return
+            except:
+                log('Failed to execute patch, maintaining course ...')
 
         conn = sqlite3.connect(dbLoc)
         protoList = getSetting("System", "protoList", conn)[0][1].split(',')
@@ -128,6 +137,7 @@ def loadSettings():
         quiet = str(getSetting("System", "quiet", conn)[0][1])
         funcPrefix = str(getSetting("System", "funcPrefix", conn)[0][1])
         protoPrefix = str(getSetting("System", "protoPrefix", conn)[0][1])
+        mainWait = float(getSetting("System", "mainWait", conn)[0][1])
         conn.close()
     else:
         log("No db found, making a new one...")
@@ -146,6 +156,8 @@ def loadSettings():
         funcPrefix = '.'
         protoPrefix = ';'
 
+        mainWait = 0.01
+
         conn = sqlite3.connect(dbLoc)
         setSetting("System", "version", {"Value":version}, conn)
         setSetting("System", "protoList", {"Value":','.join(protoList)}, conn)
@@ -156,6 +168,7 @@ def loadSettings():
         setSetting("System", "quiet", {"Value":int(quiet)}, conn)
         setSetting("System", "funcPrefix", {"Value":funcPrefix}, conn)
         setSetting("System", "protoPrefix", {"Value":protoPrefix}, conn)
+        setSetting("System", "mainWait", {"Value":mainWait}, conn)
         conn.close()
 
 def loadProtocol(location, name):
@@ -312,7 +325,7 @@ while True:
         #General plugins should prepare for "None".
         handleGenFuncs()
         #As long as plugins are handling their timeouts properly 10ms should be plenty.
-        time.sleep(0.01)
+        time.sleep(mainWait)
     else:
         change = False
     for i in inMSG:
