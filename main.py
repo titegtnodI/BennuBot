@@ -27,6 +27,10 @@ def log(text, location='log'):
     open(location, 'a').write(msg + '\r\n')
 
 def delSetting(table, what, conn=None):
+    #TODO Make a real fix
+    table = table.replace('\'', '')
+    what = what.replace('\'', '')
+
     if not conn:
         conn = sqlite3.connect(dbLoc)
         dontClose = False
@@ -48,6 +52,11 @@ def delSetting(table, what, conn=None):
     return True
 
 def setSetting(table, what, to, conn=None):
+    #TODO Make a real fix
+    table = table.replace('\'', '')
+    what = what.replace('\'', '')
+    to = to.replace('\'', '')
+
     vStr = ''
     tStr = ''
 
@@ -82,6 +91,10 @@ def setSetting(table, what, to, conn=None):
         conn.close()
 
 def getSetting(table, what, conn=None):
+    #TODO Make a real fix
+    table = table.replace('\'', '')
+    what = what.replace('\'', '')
+
     out = []
 
     if not conn:

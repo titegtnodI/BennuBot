@@ -9,7 +9,7 @@ def tell_tell(inMSG):
         if message and len(message[0][1].split('\x7f')) > 9:
                 return msg[1] + ' has enough tells.'
         if message:
-                messages = message[0][1] + '\x7f' + msg[2].replace('\'', '')
+                messages = message[0][1] + '\x7f' + msg[2]
                 authors = message[0][2] + '\x7f' + inMSG[4]
         else:
                 messages = msg[2].replace('\'', '')
