@@ -55,7 +55,6 @@ def setSetting(table, what, to, conn=None):
     #TODO Make a real fix
     table = table.replace('\'', '')
     what = what.replace('\'', '')
-    to = to.replace('\'', '')
 
     vStr = ''
     tStr = ''
@@ -69,7 +68,12 @@ def setSetting(table, what, to, conn=None):
     c = conn.cursor()
 
     for i in to.items():
-        vStr += ",'%s'" % i[1]
+        #TODO Fix this with prepared statements or something
+        if type(i[1]) is str:
+            temp = i[1].replace('\'', '')
+        else:
+            temp = i[1]
+        vStr += ",'%s'" % temp
         if type(i[1]) is str:
             tType = 'text'
         elif type(i[1]) is int:
