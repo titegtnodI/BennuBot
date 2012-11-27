@@ -161,7 +161,7 @@ def loadSettings():
         protoList = ['irc.py'] #Protocols to be loaded
         plugList  = ['say.py', 'pyexec.py', 'irc_commands.py', 'ircop_commands.py', 'time.py',
                      'google.py', 'downloader.py', 'remoteadmin.py', 'titlespam.py', 'tell.py',
-                     'loli.py'] 
+                     'loli.py', 'factoids.py'] 
                                #Plugins to be loaded
 
         protoFolder = 'protocols/'
