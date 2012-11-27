@@ -122,7 +122,7 @@ def loadSettings():
             log('Attempting to run patch to address potential issues')
             try:
                 name = str(v[0][1]) + '_' + str(version) + '.py'
-                eval(compile(open('Patches/'+name, 'U').read(), name, 'exec'), globals())
+                eval(compile(open('patches/'+name, 'U').read(), name, 'exec'), globals())
                 log('Patch appears to have executed successfully')
                 return
             except:
