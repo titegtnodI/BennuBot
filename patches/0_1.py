@@ -3,7 +3,7 @@ conn = sqlite3.connect(dbLoc)
 
 #Patch stuff
 setSetting("System", "version", (1,), ('Value',), conn)
-mainWait = 0.01
+mainWait = 0.03
 setSetting("System", "mainWait", (mainWait,), ('Value',), conn)
 
 #Load other settings normally

@@ -137,9 +137,8 @@ def loadSettings():
     else:
         log("No db found, making a new one...")
         protoList = ['irc.py'] #Protocols to be loaded
-        plugList  = ['say.py', 'pyexec.py', 'irc_commands.py', 'ircop_commands.py', 'time.py',
-                     'google.py', 'downloader.py', 'remoteadmin.py', 'titlespam.py', 'tell.py',
-                     'loli.py', 'factoids.py'] 
+        plugList  = ['say.py', 'pyexec.py', 'irc_commands.py', 'time.py', 'google.py', 'downloader.py',
+                     'remoteadmin.py', 'tell.py', 'loli.py', 'factoids.py'] 
                                #Plugins to be loaded
 
         protoFolder = 'protocols/'
@@ -151,7 +150,7 @@ def loadSettings():
         funcPrefix = '.'
         protoPrefix = ';'
 
-        mainWait = 0.01
+        mainWait = 0.03
 
         conn = sqlite3.connect(dbLoc)
         setSetting("System", "version", (version,), ('Value',), conn)
@@ -319,7 +318,7 @@ while True:
     if not change:
         #General plugins should prepare for "None".
         handleGenFuncs()
-        #As long as plugins are handling their timeouts properly 10ms should be plenty.
+        #As long as plugins are handling their timeouts properly 30ms should be plenty.
         time.sleep(mainWait)
     else:
         change = False
