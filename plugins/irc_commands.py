@@ -35,8 +35,8 @@ def irc_kickban(inMSG, plusOrMinus='+'):
 	
 
 def irc_action(inMSG):
-	if inMSG[1] != 'irc': return
-	sendMSG('\x01ACTION ' + inMSG[0].split(None, 1)[1] + '\x01', inMSG[1], inMSG[2], inMSG[3])
+    if inMSG[1] == 'irc':
+        return '\x01ACTION ' + inMSG[0].split(None, 1)[1] + '\x01'
 
 def load():
 	return {'op':(lambda x:irc_set(x, '+o')), 'deop':(lambda x:irc_set(x, '-o')),
