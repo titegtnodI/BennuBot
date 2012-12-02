@@ -14,13 +14,13 @@ def fact_remember(inMSG):
     if len(splitMSG) != 3:
         return
 
-    if getSetting('facts', splitMSG[1]):
+    if getSetting('Facts', splitMSG[1]):
         return 'Factoid "'+splitMSG[1]+'" already exists.'
 
     if len(splitMSG[2]) < 9 or splitMSG[2][:7] != '<reply>':
         return 'Factoid doesn\'t begin with "<reply>".'
 
-    setSetting('facts', splitMSG[1], {'Value':splitMSG[2]})
+    setSetting('Facts', splitMSG[1], {'Value':splitMSG[2]})
     sendMSG('"'+splitMSG[1]+'" added.', inMSG[1], inMSG[2], inMSG[3])
 
 def fact_forget(inMSG):
@@ -31,7 +31,7 @@ def fact_forget(inMSG):
     if len(splitMSG) != 2:
         return
 
-    if not delSetting('facts', splitMSG[1]):
+    if not delSetting('Facts', splitMSG[1]):
         return 'Error deleting "'+splitMSG[1]+'" (Probably doesn\'t exist).'
 
     sendMSG('"'+splitMSG[1]+'" deleted.', inMSG[1], inMSG[2], inMSG[3])
@@ -44,13 +44,13 @@ def fact_replace(inMSG):
     if len(splitMSG) != 3:
         return
 
-    if not getSetting('facts', splitMSG[1]):
+    if not getSetting('Facts', splitMSG[1]):
         return 'Factoid "'+splitMSG[1]+'" does not exist.'
 
     if len(splitMSG[2]) < 9 or splitMSG[2][:7] != '<reply>':
         return 'Factoid doesn\'t begin with "<reply>".'
 
-    setSetting('facts', splitMSG[1], {'Value':splitMSG[2]})
+    setSetting('Facts', splitMSG[1], {'Value':splitMSG[2]})
     sendMSG('"'+splitMSG[1]+'" replaced.', inMSG[1], inMSG[2], inMSG[3])
 
 def fact_getFact(inMSG):
@@ -63,7 +63,7 @@ def fact_getFact(inMSG):
     if len(splitMSG) != 1:
         return
     
-    fact = getSetting('facts', inMSG[0][len(fact_prefix):])
+    fact = getSetting('Facts', inMSG[0][len(fact_prefix):])
     if not fact or len(fact[0][1]) < 9 or fact[0][1][:7] != '<reply>':
         return
 
