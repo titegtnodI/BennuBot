@@ -27,10 +27,6 @@ def log(text, location='log'):
     open(location, 'a').write(msg + '\r\n')
 
 def delSetting(table, what, conn=None):
-    #TODO Make a real fix
-    table = table.replace('\'', '')
-    what = what.replace('\'', '')
-
     if not conn:
         conn = sqlite3.connect(dbLoc)
         dontClose = False
@@ -40,7 +36,7 @@ def delSetting(table, what, conn=None):
     c = conn.cursor()
 
     try:
-        c.execute("delete from "+table+" where id='"+what+"'")
+        c.execute("delete from "+table+" where id=?", (what,))
     except:
         return False
 
@@ -51,14 +47,7 @@ def delSetting(table, what, conn=None):
 
     return True
 
-def setSetting(table, what, to, conn=None):
-    #TODO Make a real fix
-    table = table.replace('\'', '')
-    what = what.replace('\'', '')
-
-    vStr = ''
-    tStr = ''
-
+def setSetting(table, what, to, names=('Value',), conn=None):
     if not conn:
         conn = sqlite3.connect(dbLoc)
         dontClose = False
@@ -66,28 +55,21 @@ def setSetting(table, what, to, conn=None):
         dontClose = True
 
     c = conn.cursor()
+    tStr = ''
+    q = ''
 
-    for i in to.items():
-        #TODO Fix this with prepared statements or something
-        if type(i[1]) is str:
-            temp = i[1].replace('\'', '')
-        else:
-            temp = i[1]
-        vStr += ",'%s'" % temp
-        if type(i[1]) is str:
-            tType = 'text'
-        elif type(i[1]) is int:
-            tType = 'integer'
-        elif type(i[1]) is float:
-            tType = 'real'
-        elif type(i[1]) is type(None):
-            tType = 'null'
-        else:
-            tType = 'blob'
-        tStr += ",%s %s" % (i[0], tType)
+    for i in xrange(len(names)):
+        tStr += ',%s' % (names[i])
 
-    c.execute("create table if not exists "+table+"(id text primary key"+tStr+")")
-    c.execute("replace into "+table+" values ('"+what+"'"+vStr+")")
+    for i in names:
+        q += '?, '
+
+    q = q[:-2]
+
+    to = (what,) + to
+
+    c.execute("create table if not exists "+table+"(id text primary key "+tStr+")")
+    c.execute("replace into "+table+" values (?, "+q+")", to)
 
     conn.commit()
 
@@ -95,10 +77,6 @@ def setSetting(table, what, to, conn=None):
         conn.close()
 
 def getSetting(table, what, conn=None):
-    #TODO Make a real fix
-    table = table.replace('\'', '')
-    what = what.replace('\'', '')
-
     out = []
 
     if not conn:
@@ -110,7 +88,7 @@ def getSetting(table, what, conn=None):
     c = conn.cursor()
 
     try:
-        c.execute("select * from "+table+" where id='"+what+"'")
+        c.execute("select * from "+table+" where id=?", (what,))
     except:
         return False
 
@@ -176,16 +154,16 @@ def loadSettings():
         mainWait = 0.01
 
         conn = sqlite3.connect(dbLoc)
-        setSetting("System", "version", {"Value":version}, conn)
-        setSetting("System", "protoList", {"Value":','.join(protoList)}, conn)
-        setSetting("System", "plugList", {"Value":','.join(plugList)}, conn)
-        setSetting("System", "protoFolder", {"Value":protoFolder}, conn)
-        setSetting("System", "plugFolder", {"Value":plugFolder}, conn)
-        setSetting("System", "nick", {"Value":nick}, conn)
-        setSetting("System", "quiet", {"Value":int(quiet)}, conn)
-        setSetting("System", "funcPrefix", {"Value":funcPrefix}, conn)
-        setSetting("System", "protoPrefix", {"Value":protoPrefix}, conn)
-        setSetting("System", "mainWait", {"Value":mainWait}, conn)
+        setSetting("System", "version", (version,), ('Value',), conn)
+        setSetting("System", "protoList", (','.join(protoList),), ('Value',), conn)
+        setSetting("System", "plugList", (','.join(plugList),), ('Value',), conn)
+        setSetting("System", "protoFolder", (protoFolder,), ('Value',), conn)
+        setSetting("System", "plugFolder", (plugFolder,), ('Value',), conn)
+        setSetting("System", "nick", (nick,), ('Value',), conn)
+        setSetting("System", "quiet", (int(quiet),), ('Value',), conn)
+        setSetting("System", "funcPrefix", (funcPrefix,), ('Value',), conn)
+        setSetting("System", "protoPrefix", (protoPrefix,), ('Value',), conn)
+        setSetting("System", "mainWait", (mainWait,), ('Value',), conn)
         conn.close()
 
 def loadProtocol(location, name):
