@@ -24,7 +24,7 @@ def remote_setSysSetting(inMSG):
                 return
         splitMSG = inMSG[0].split(None, 2)
         if len(splitMSG) == 3:
-                setSetting("System", splitMSG[1], {"Value":splitMSG[2]})
+                setSetting("System", splitMSG[1], (splitMSG[2],))
                 sendMSG("Set "+splitMSG[1]+" to "+splitMSG[2], inMSG[1], inMSG[2], inMSG[3])
         else:
                 sendMSG("Usage: "+funcPrefix+"setsys <var> <value>", inMSG[1], inMSG[2], inMSG[3])
@@ -66,7 +66,7 @@ def remote_loadPlugin(inMSG):
         #If plugin isn't autoloaded ... autoload it
         if not plugin[1] in plugList and len(plugin) == 2:
                 plugList += [plugin[1]]
-                setSetting("System", "plugList", {"Value":','.join(plugList)})
+                setSetting("System", "plugList", (','.join(plugList),))
 
 def remote_unloadPlugin(inMSG):
         if getPermission(inMSG) < 1000:
@@ -79,7 +79,7 @@ def remote_unloadPlugin(inMSG):
         sendMSG("Unloading plugin "+plugin[1]+"...", inMSG[1], inMSG[2], inMSG[3])
         if plugin[1] in lPlugList:
                 del lPlugList[lPlugList.index(plugin[1])]
-                setSetting("System", "plugList", {"Value":','.join(lPlugList)})
+                setSetting("System", "plugList", (','.join(lPlugList),))
 
         loadPlugins()
 
@@ -100,7 +100,7 @@ def remote_loadProtocol(inMSG):
         #If plugin isn't autoloaded ... autoload it
         if not plugin[1] in protoList and len(plugin) == 2:
                 protoList += [plugin[1]]
-                setSetting("System", "protoList", {"Value":','.join(protoList)})
+                setSetting("System", "protoList", (','.join(protoList),))
 
 def remote_unloadProtocol(inMSG):
         if getPermission(inMSG) < 1000:
@@ -113,7 +113,7 @@ def remote_unloadProtocol(inMSG):
         sendMSG("Unloading protocol "+plugin[1]+"...", inMSG[1], inMSG[2], inMSG[3])
         if plugin[1] in lPlugList:
                 del lPlugList[lPlugList.index(plugin[1])]
-                setSetting("System", "protoList", {"Value":','.join(lPlugList)})
+                setSetting("System", "protoList", (','.join(lPlugList),))
 
         loadProtocols()
 

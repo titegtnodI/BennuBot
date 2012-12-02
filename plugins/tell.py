@@ -12,10 +12,10 @@ def tell_tell(inMSG):
                 messages = message[0][1] + '\x7f' + msg[2]
                 authors = message[0][2] + '\x7f' + inMSG[4]
         else:
-                messages = msg[2].replace('\'', '')
+                messages = msg[2]
                 authors = inMSG[4]
 
-        setSetting('Tell', msg[1], {'Messages':messages, 'Authors':authors})
+        setSetting('Tell', msg[1], (messages, authors), ('Messages', 'Authors'))
         sendMSG(inMSG[4] + ': I\'ll pass that along.', inMSG[1], inMSG[2], inMSG[3])
 
 def tell_tellTells(inMSG):

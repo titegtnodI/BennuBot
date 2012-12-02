@@ -20,7 +20,7 @@ def fact_remember(inMSG):
     if len(splitMSG[2]) < 9 or splitMSG[2][:7] != '<reply>':
         return 'Factoid doesn\'t begin with "<reply>".'
 
-    setSetting('Facts', splitMSG[1], {'Value':splitMSG[2]})
+    setSetting('Facts', splitMSG[1], (splitMSG[2],))
     sendMSG('"'+splitMSG[1]+'" added.', inMSG[1], inMSG[2], inMSG[3])
 
 def fact_forget(inMSG):
@@ -50,7 +50,7 @@ def fact_replace(inMSG):
     if len(splitMSG[2]) < 9 or splitMSG[2][:7] != '<reply>':
         return 'Factoid doesn\'t begin with "<reply>".'
 
-    setSetting('Facts', splitMSG[1], {'Value':splitMSG[2]})
+    setSetting('Facts', splitMSG[1], (splitMSG[2],))
     sendMSG('"'+splitMSG[1]+'" replaced.', inMSG[1], inMSG[2], inMSG[3])
 
 def fact_getFact(inMSG):
