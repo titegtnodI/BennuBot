@@ -2,9 +2,9 @@
 conn = sqlite3.connect(dbLoc)
 
 #Patch stuff
-setSetting("System", "version", {"Value":1}, conn)
+setSetting("System", "version", (1,), ('Value',), conn)
 mainWait = 0.01
-setSetting("System", "mainWait", {"Value":mainWait}, conn)
+setSetting("System", "mainWait", (mainWait,), ('Value',), conn)
 
 #Load other settings normally
 protoList = getSetting("System", "protoList", conn)[0][1].split(',')
