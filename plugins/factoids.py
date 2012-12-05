@@ -1,12 +1,33 @@
 #Don't care if factoids isn't a word.
-#Enjoy the plugin.
-#TODO Implement <action> better
-#TODO Implement $inp$
+#Enjoy the plugin!
+#TODO Implement "|"
+#TODO Restructure to detect who set the factoid, and maybe to support additional information
 plugName = 'Factoids'
 
 fact_prefix = '\''
 fact_setPermissions = 0 #Permissions required to set factoids
 fact_usePermissions = 0 #Permissions required to use set factoids
+
+def fact_isValid(msg, protocol):
+    if len(msg) < 9:
+        return 'Factoid too short.'
+    elif msg[:7] != '<reply>':
+        if protocol == 'irc':
+            if msg[:8] == '<action>':
+                return True
+            else:
+                return 'Factoid doesn\'t begin with "<reply>" or "<action>".'
+        else:
+            return 'Factoid doesn\'t begin with "<reply>".'
+    return True
+
+def fact_getResponse(msg, protocol):
+    if msg[:7] != '<reply>':
+        if protocol == 'irc' and msg[:8] == '<action>':
+            return '\x01ACTION ' + msg[8:] + '\x01'
+    else:
+        return msg[7:]
+    return False
 
 def fact_remember(inMSG):
     if getPermission(inMSG) < fact_setPermissions:
@@ -16,14 +37,20 @@ def fact_remember(inMSG):
     if len(splitMSG) != 3:
         return
 
-    if getSetting('Facts', splitMSG[1]):
+    conn = sqlite3.connect(dbLoc)
+
+    if getSetting('Facts', splitMSG[1], conn):
+        conn.close()
         return 'Factoid "'+splitMSG[1]+'" already exists.'
 
-    if len(splitMSG[2]) < 9 or (splitMSG[2][:7] != '<reply>' and (splitMSG[2][:8] != '<action>' or
-       inMSG[1] != 'irc')):
-        return 'Factoid doesn\'t begin with "<reply>".'
+    validResponse = fact_isValid(splitMSG[2], inMSG[1])
 
-    setSetting('Facts', splitMSG[1], (splitMSG[2],))
+    if validResponse != True:
+        conn.close()
+        return validResponse
+
+    setSetting('Facts', splitMSG[1], (splitMSG[2],), ('Value',), conn)
+    conn.close()
     return '"'+splitMSG[1]+'" added.'
 
 def fact_forget(inMSG):
@@ -47,14 +74,20 @@ def fact_replace(inMSG):
     if len(splitMSG) != 3:
         return
 
-    if not getSetting('Facts', splitMSG[1]):
+    conn = sqlite3.connect(dbLoc)
+
+    if not getSetting('Facts', splitMSG[1], conn):
+        conn.close()
         return 'Factoid "'+splitMSG[1]+'" does not exist.'
 
-    if len(splitMSG[2]) < 9 or (splitMSG[2][:7] != '<reply>' and (splitMSG[2][:8] != '<action>' or
-       inMSG[1] != 'irc')):
-        return 'Factoid doesn\'t begin with "<reply>".'
+    validResponse = fact_isValid(splitMSG[2], inMSG[1])
 
-    setSetting('Facts', splitMSG[1], (splitMSG[2],))
+    if validResponse != True:
+        conn.close()
+        return validResponse
+
+    setSetting('Facts', splitMSG[1], (splitMSG[2],), ('Value',), conn)
+    conn.close()
     return '"'+splitMSG[1]+'" replaced.'
 
 def fact_getFact(inMSG):
@@ -62,20 +95,28 @@ def fact_getFact(inMSG):
         len(inMSG[0]) < len(fact_prefix)+1 or inMSG[0][:len(fact_prefix)] != fact_prefix):
         return
 
-    #TODO Check for whitespace instead, probably less intensive
     splitMSG = inMSG[0].split()
-    if len(splitMSG) != 1:
+    if len(splitMSG) > 2:
         return
+    elif len(splitMSG) == 2:
+        who = splitMSG[1]
+    else:
+        who = inMSG[4]
     
-    fact = getSetting('Facts', inMSG[0][len(fact_prefix):])
-    if not fact or len(fact[0][1]) < 9 or (fact[0][1][:7] != '<reply>' and (fact[0][1][:8] != '<action>' or
-       inMSG[1] != 'irc')):
+    fact = getSetting('Facts', splitMSG[0][len(fact_prefix):])
+
+    if fact:
+        validResponse = fact_isValid(fact[0][1], inMSG[1])
+    else:
         return
 
-    if fact[0][1][:2] == '<a':
-        sendMSG('\x01ACTION ' + fact[0][1][8:] + '\x01', inMSG[1], inMSG[2], inMSG[3])
-    else:
-        return sendMSG(fact[0][1][7:], inMSG[1], inMSG[2], inMSG[3])
+    if validResponse != True:
+        sendMSG(validResponse, inMSG[1], inMSG[2], inMSG[3])
+
+    validResponse = fact_getResponse(fact[0][1], inMSG[1])
+
+    if validResponse:
+        sendMSG(validResponse.replace('$inp$', who), inMSG[1], inMSG[2], inMSG[3])
 
 def load():
     global funcs
