@@ -251,7 +251,7 @@ def handleGenFuncs(command=None):
             if not quiet:
                 outMSG.append(['Error starting a general function. Too many threads?', self.command[1],
                         self.command[2], self.command[3]])
-            time.sleep(0.01)
+            time.sleep(mainWait/2.0)
 
 #Handles running the general functions
 class handleGenFunc(threading.Thread):
