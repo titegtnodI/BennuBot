@@ -1,11 +1,16 @@
 import threading, time, socket, re, sqlite3
 from datetime import date
-#TODO Garbage collection for unused "outMSG" data
 #TODO Alternative hash authentication
 #TODO Protocol to integrate GitHub commits with JSON POST
 
 #Database location
 dbLoc = 'db'
+
+#Garbage collection (Use this is BennuBot seems slow, crashes often, or uses too much CPU)
+collectGarbage = False
+#Time to wait before deciding that the earliest queued to send is "garbage"
+#Don't make this less than 1, increase it if BennuBot "forgets" to send some messages
+collectInterval = 3 #Time in seconds
 
 #Please don't change anything below this line then complain when something breaks
 version = 1
@@ -19,6 +24,10 @@ load = None
 plugAdmins = None
 
 change = False
+
+if collectGarbage:
+    foundTime = None
+    lastMSG = None
 
 def log(text, location='log'):
     msg = time.strftime('%Y-%m-%d %H:%M:%S') + '\t' + text
@@ -306,6 +315,25 @@ class parseCommand(threading.Thread):
             elif not quiet:
                 sendMSG('Invalid command.', self.command[1], self.command[2], self.command[3])
 
+#Collect the garbage
+def doCollect(foundTime, lastMSG):
+    global outMSG
+
+    try:
+        if len(outMSG) == 0:
+            return None, None
+        elif foundTime == None or lastMSG == None:
+            return time.time(), outMSG[0]
+        elif lastMSG != outMSG[0]:
+            return None, None
+        elif foundTime + collectInterval <= time.time() and lastMSG == outMSG[0]:
+           del outMSG[0]
+           return None, None
+    except:
+        return foundTime, lastMSG
+
+    return foundTime, lastMSG
+
 log('Loading Settings...')
 loadSettings()
 log('Loading Protocols...')
@@ -327,3 +355,5 @@ while True:
         parseCommand(i).start()
         handleGenFuncs(i)
         del inMSG[0]
+    if collectGarbage:
+        foundTime, lastMSG = doCollect(foundTime, lastMSG)
