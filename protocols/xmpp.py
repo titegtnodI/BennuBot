@@ -1,9 +1,10 @@
 #Depends on XMPPpy
 import xmpp
 plugName = 'XMPP'
-plugAdmins = {'xmpp':[['-100004485004612@chat.facebook.com',1000]]}
+plugAdmins = {'xmpp':[['-100004485004612@chat.facebook.com',1000], ['ti.teg.tnod.i@gmail.com',1000]]}
 
-xmpp_connections = [[('chat.facebook.com', 5222), 'doop.bennu.7@chat.facebook.com', '1k1kInyt8bb', 'Pidgin']]
+xmpp_connections = [[('chat.facebook.com', 5222), 'xxxx.xxxxx.x@chat.facebook.com', 'password', 'Pidgin'],
+                    [('gmail.com', 5222), 'bennu.bot@gmail.com', 'password', 'BennuBot']]
 xmpp_die = False
 xmpp_roster = []
 xmpp_debug = False
@@ -30,6 +31,8 @@ def xmpp_message(sess, msg, server):
     try:
         jid = str(msg.getFrom())
         nick = xmpp_roster[server].getName(jid)
+        if not nick:
+            nick = jid.split('@')[0]
         text = msg.getBody()
         if text:
             inMSG.append([str(text), 'xmpp', server, jid, nick, jid])
@@ -54,18 +57,19 @@ class xmpp_connectionHandler(threading.Thread):
                                          xmpp_connections[self.i][3])
                 xmpp_jabber[self.i].sendInitPresence(requestRoster=1)
                 xmpp_jabber[self.i].RegisterHandler('message', (lambda x,y:xmpp_message(x, y, self.i)))
-            except:
+            except Exception as e:
+                if xmpp_debug:
+                    print '[XMPP-Err]\t%s' % (e)
                 continue
             last_roster = time.time()
             last_keepalive = last_roster
-            while not xmpp_die:
+            while not xmpp_die and xmpp_jabber[self.i].Process(1):
                 if last_roster <= time.time():
                     xmpp_roster[self.i] = xmpp_jabber[self.i].getRoster()
                     last_roster = time.time()+30
                 if last_keepalive+5 <= time.time():
                     xmpp_jabber[self.i].send(xmpp.Message(xmpp_connections[self.i][1], None))
                     last_keepalive = time.time()+5
-                xmpp_jabber[self.i].Process(1)
                 time.sleep(0.05)
         try:
             #TODO Properly close the connection
