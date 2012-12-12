@@ -1,9 +1,9 @@
 #Depends on XMPPpy
 import xmpp
 plugName = 'XMPP'
-plugAdmins = {'xmpp':[['*',1000]]}
+plugAdmins = {'xmpp':[['-100004485004612@chat.facebook.com',1000]]}
 
-xmpp_connections = [[('chat.facebook.com', 5222), 'xxxx.xxxxx.x@chat.facebook.com', 'password', 'Pidgin']]
+xmpp_connections = [[('chat.facebook.com', 5222), 'doop.bennu.7@chat.facebook.com', '1k1kInyt8bb', 'Pidgin']]
 xmpp_die = False
 xmpp_roster = []
 xmpp_debug = False
@@ -56,11 +56,15 @@ class xmpp_connectionHandler(threading.Thread):
                 xmpp_jabber[self.i].RegisterHandler('message', (lambda x,y:xmpp_message(x, y, self.i)))
             except:
                 continue
-            last = time.time()-30
+            last_roster = time.time()
+            last_keepalive = last_roster
             while not xmpp_die:
-                if last+30 <= time.time():
+                if last_roster <= time.time():
                     xmpp_roster[self.i] = xmpp_jabber[self.i].getRoster()
-                    last = time.time()
+                    last_roster = time.time()+30
+                if last_keepalive+5 <= time.time():
+                    xmpp_jabber[self.i].send(xmpp.Message(xmpp_connections[self.i][1], None))
+                    last_keepalive = time.time()+5
                 xmpp_jabber[self.i].Process(1)
                 time.sleep(0.05)
         try:
