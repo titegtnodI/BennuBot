@@ -27,8 +27,12 @@ def tell_tellTells(inMSG):
                 messages = message[0][1].split('\x7f')
                 authors = message[0][2].split('\x7f')
                 for i in xrange(len(messages)):
-                        sendMSG((authors[i] + ' sent you: ' + messages[i]).encode('utf-8'), inMSG[1],
-                                inMSG[2], inMSG[4])
+                        if inMSG[1] == 'xmpp':
+                            sendMSG((authors[i] + ' sent you: ' + messages[i]).encode('utf-8'), inMSG[1],
+                                    inMSG[2], inMSG[3])
+                        else:
+                            sendMSG((authors[i] + ' sent you: ' + messages[i]).encode('utf-8'), inMSG[1],
+                                    inMSG[2], inMSG[4])
                 delSetting('Tell', inMSG[4])                
 
 def load():
