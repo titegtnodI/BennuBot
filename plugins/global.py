@@ -1,6 +1,8 @@
 plugName = 'Global Messenger'
 
 def global_send(inMSG):
+    if getPermission(inMSG) != 1000:
+        return
     splitMSG = inMSG[0].split(None, 2)
     if len(splitMSG) != 3:
         return 'Usage: '+funcPrefix+'global <protocols (comma sep)> <msg>'
