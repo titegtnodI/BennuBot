@@ -95,7 +95,7 @@ def remote_loadProtocol(inMSG):
         if len(plugin) == 3:
                 loadProtocol(plugin[2]+plugin[1], plugin[1])
         else:
-                loadProtocol(plugFolder+plugin[1], plugin[1])
+                loadProtocol(protoFolder+plugin[1], plugin[1])
 
         #If plugin isn't autoloaded ... autoload it
         if not plugin[1] in protoList and len(plugin) == 2:
