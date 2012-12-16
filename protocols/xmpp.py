@@ -3,8 +3,9 @@ import xmpp
 plugName = 'XMPP'
 plugAdmins = {'xmpp':[['-100004485004612@chat.facebook.com',1000], ['ti.teg.tnod.i@gmail.com',1000]]}
 
-xmpp_connections = [[('chat.facebook.com', 5222), 'xxxx.xxxxx.x@chat.facebook.com', 'password', 'Pidgin'],
+xmpp_connections = [[('chat.facebook.com', 5222), 'xxx.xxxx.x@chat.facebook.com', 'password', 'Pidgin'],
                     [('gmail.com', 5222), 'bennu.bot@gmail.com', 'password', 'BennuBot']]
+
 xmpp_die = False
 xmpp_roster = []
 xmpp_debug = False
@@ -35,7 +36,7 @@ def xmpp_message(sess, msg, server):
             nick = jid.split('@')[0]
         text = msg.getBody()
         if text:
-            inMSG.append([str(text), 'xmpp', server, jid, nick, jid])
+            inMSG.append([unicode(text), 'xmpp', server, jid, nick, jid])
     except Exception as e:
         if xmpp_debug:
             print '[XMPP-Err]\t%s' % (e)

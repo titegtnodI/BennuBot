@@ -1,13 +1,13 @@
 #TODO SSL
 plugName = 'IRC'
 plugAdmins = {'irc':[['*titegtnod*@rainbows.inafire.com',1000],['lembas!toastin@inafire.com',1000]
-        ,['*@127.0.0.1',1000]]}
+        ,['*@bennu.pho3n1x.net',1000]]}
 
 #TODO Handle join fails properly.
 #TODO Update channels upon kick.
 #TODO Handle nick changes properly (If nick change fails).
 #TODO Announce a successful ";irc die"
-IRCconnections = [[('irc.pho3n1x.net', 6667), '#bottest,#pho3n1x', nick, ['PRIVMSG NickServ :id PASSWORD']]]
+IRCconnections = [[('irc.pho3n1x.net', 6667), '#bottest', nick, ['PRIVMSG NickServ :id PASSWORD']]]
 IRCdie = False
 
 class ircSendHandler(threading.Thread):
@@ -23,8 +23,8 @@ class ircSendHandler(threading.Thread):
                     localMSG.append(i)
                 for i in xrange(len(localMSG)):
                     if len(localMSG[i]) > 1 and localMSG[i][1] == 'irc':
-                        IRCsocks[localMSG[i][2]].send('PRIVMSG ' + localMSG[i][3] +
-                            ' :' + localMSG[i][0] + '\r\n')
+                        IRCsocks[localMSG[i][2]].send(('PRIVMSG ' + localMSG[i][3] +
+                            ' :' + localMSG[i][0] + '\r\n').encode('utf-8'))
                         outMSG.remove(localMSG[i])
                 
 class ircConnectionHandler(threading.Thread):
@@ -74,11 +74,11 @@ class ircConnectionHandler(threading.Thread):
                 else:
                     try:
                         if data[2][0] == '#':
-                            inMSG.append([msg, 'irc', self.i, data[2],
+                            inMSG.append([msg.decode('utf-8'), 'irc', self.i, data[2],
                                 data[0].split('!')[0][1:], data[0][1:]])
                         else:
                             tNick = data[0].split('!')[0][1:]
-                            inMSG.append([msg, 'irc', self.i, tNick, tNick,
+                            inMSG.append([msg.decode('utf-8'), 'irc', self.i, tNick, tNick,
                                 data[0][1:]])
                     except:
                         None
