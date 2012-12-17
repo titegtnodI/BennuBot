@@ -14,12 +14,15 @@ def global_send(inMSG):
             for ii in xrange(len(IRCconnections)):
                 channels = IRCconnections[ii][1].split(',')
                 for iii in channels:
-                    IRCsocks[ii].send('PRIVMSG ' + iii + ' :' + splitMSG[2] + '\r\n')
+                    sendMSG(splitMSG[2], 'irc', ii, iii)
         elif i == 'xmpp':
             for ii in xrange(len(xmpp_connections)):
                 ppl = xmpp_roster[ii].getItems()
                 for iii in ppl:
-                    xmpp_jabber[ii].send(xmpp.Message(iii, splitMSG[2]))
+                    sendMSG(splitMSG[2], 'xmpp', ii, iii)
+        elif i == 'furc':
+            for ii in xrange(len(furc_sock)):
+                sendMSG(splitMSG[2], 'furc', ii, '')
 
 def load():
     return {'global':global_send}
