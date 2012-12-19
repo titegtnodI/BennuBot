@@ -12,7 +12,7 @@ def fact_isValid(msg, protocol):
     if len(msg) < 9:
         return 'Factoid too short.'
     elif msg[:7] != '<reply>':
-        if protocol == 'irc':
+        if protocol == 'irc' or protocol == 'furc':
             if msg[:8] == '<action>':
                 return True
             else:
@@ -22,9 +22,11 @@ def fact_isValid(msg, protocol):
     return True
 
 def fact_getResponse(msg, protocol):
-    if msg[:7] != '<reply>':
-        if protocol == 'irc' and msg[:8] == '<action>':
+    if msg[:7] != '<reply>' and msg[:8] == '<action>':
+        if protocol == 'irc':
             return '\x01ACTION ' + msg[8:] + '\x01'
+        elif protocol == 'furc':
+            return ':' + msg[8:]
     else:
         return msg[7:]
     return False
