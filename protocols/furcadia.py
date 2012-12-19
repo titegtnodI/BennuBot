@@ -50,7 +50,10 @@ class furc_sendHandler(threading.Thread):
                         if localMSG[i][3] != '':
                             furc_sock[localMSG[i][2]].send(('wh ' + localMSG[i][3] + ' ' + localMSG[i][0] + '\n').encode('utf-8'))
                         else:
-                            furc_sock[localMSG[i][2]].send(('"' + localMSG[i][0] + '\n').encode('utf-8'))
+                            if len(localMSG[i][0]) > 0 and localMSG[i][0][0] == ':':
+                                furc_sock[localMSG[i][2]].send((localMSG[i][0] + '\n').encode('utf-8'))
+                            else:
+                                furc_sock[localMSG[i][2]].send(('"' + localMSG[i][0] + '\n').encode('utf-8'))
                         outMSG.remove(localMSG[i])
 
 class furc_connectionHandler(threading.Thread):
