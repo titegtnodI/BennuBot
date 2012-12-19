@@ -23,17 +23,24 @@ def tell_tellTells(inMSG):
                 return
 
         message = getSetting('Tell', inMSG[4])
-        if message:
-                messages = message[0][1].split('\x7f')
-                authors = message[0][2].split('\x7f')
-                for i in xrange(len(messages)):
-                        if inMSG[1] == 'xmpp':
-                            sendMSG(authors[i] + ' sent you: ' + messages[i], inMSG[1],
-                                    inMSG[2], inMSG[3])
-                        else:
-                            sendMSG(authors[i] + ' sent you: ' + messages[i], inMSG[1],
-                                    inMSG[2], inMSG[4])
-                delSetting('Tell', inMSG[4])                
+        name = inMSG[4]
+        if not message:
+            message = getSetting('Tell', inMSG[5])
+            name = inMSG[5]
+        if not message:
+            return
+
+        messages = message[0][1].split('\x7f')
+        authors = message[0][2].split('\x7f')
+        for i in xrange(len(messages)):
+            msg = authors[i] + ' sent you: ' + messages[i]
+            if inMSG[1] == 'xmpp':
+                sendMSG(msg, inMSG[1], inMSG[2], inMSG[3])
+            elif inMSG[1] == 'furcadia':
+                sendMSG(msg, inMSG[1], inMSG[2], inMSG[5])
+            else:
+                sendMSG(msg, inMSG[1], inMSG[2], inMSG[4])
+        delSetting('Tell', name)                
 
 def load():
         global funcs
