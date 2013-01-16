@@ -85,10 +85,13 @@ def load():
     global xmpp_jabber, xmpp_roster, xmpp_die
     #If connections exists, close them
     xmpp_die = True
-    #TODO Properly close the connections here
     try:
         for i in xmpp_jabber:
-            time.sleep(0.05)
+            try:
+                i.disconnect()
+                time.sleep(0.5)
+            except:
+                None
     except:
         None
     xmpp_die = False
