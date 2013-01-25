@@ -59,12 +59,15 @@ def remote_loadPlugin(inMSG):
 
         sendMSG("Loading plugin "+plugin[1]+"...", inMSG[1], inMSG[2], inMSG[3])
         if len(plugin) == 3:
-                loadPlugin(plugin[2]+plugin[1], plugin[1])
+                success = loadPlugin(plugin[2]+plugin[1], plugin[1])
         else:
-                loadPlugin(plugFolder+plugin[1], plugin[1])
+                success = loadPlugin(plugFolder+plugin[1], plugin[1])
 
-        #If plugin isn't autoloaded ... autoload it
-        if not plugin[1] in plugList and len(plugin) == 2:
+        if not success:
+            sendMSG('Plugin "'+plugin[1]+'" failed to load.')
+
+        #If plugin isn't autoloaded ... autoload it ... only if it actually loads
+        if not plugin[1] in plugList and len(plugin) == 2 and success:
                 plugList += [plugin[1]]
                 setSetting("System", "plugList", (','.join(plugList),))
 
@@ -93,12 +96,15 @@ def remote_loadProtocol(inMSG):
 
         sendMSG("Loading protocol "+plugin[1]+"...", inMSG[1], inMSG[2], inMSG[3])
         if len(plugin) == 3:
-                loadProtocol(plugin[2]+plugin[1], plugin[1])
+                success = loadProtocol(plugin[2]+plugin[1], plugin[1])
         else:
-                loadProtocol(protoFolder+plugin[1], plugin[1])
+                success = loadProtocol(protoFolder+plugin[1], plugin[1])
 
-        #If plugin isn't autoloaded ... autoload it
-        if not plugin[1] in protoList and len(plugin) == 2:
+        if not success:
+            sendMSG('Protocol "'+plugin[1]+'" failed to load.')
+
+        #If plugin isn't autoloaded ... autoload it ... only if it actually loads
+        if not plugin[1] in protoList and len(plugin) == 2 and success:
                 protoList += [plugin[1]]
                 setSetting("System", "protoList", (','.join(protoList),))
 
