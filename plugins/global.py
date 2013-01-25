@@ -17,8 +17,8 @@ def global_send(inMSG):
                     sendMSG(splitMSG[2], 'irc', ii, iii)
         elif i == 'xmpp':
             for ii in xrange(len(xmpp_connections)):
+                if not xmpp_roster[ii]: continue
                 ppl = xmpp_roster[ii].getItems()
-                if not ppl: continue
                 for iii in ppl:
                     sendMSG(splitMSG[2], 'xmpp', ii, iii)
         elif i == 'furc':

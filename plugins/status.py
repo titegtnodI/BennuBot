@@ -21,9 +21,9 @@ def status_status(inMSG):
             connections = len(xmpp_connections)
             output.append('   * XMPP, %s servers:' % (connections))
             for ii in xrange(connections):
-                ppl = xmpp_roster[ii].getItems()
-                if ppl:
-                    output.append('      - %s, %s friends' % (xmpp_connections[ii][0][0], len(ppl)))
+                if xmpp_roster[ii]:
+                    output.append('      - %s, %s friends' % (xmpp_connections[ii][0][0],
+                                                              len(xmpp_roster[ii].getItems())))
                 else:
                     output.append('      - %s, disconnected' % (xmpp_connections[ii][0][0]))
         elif i == 'furc':
