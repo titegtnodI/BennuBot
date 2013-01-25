@@ -64,7 +64,7 @@ def remote_loadPlugin(inMSG):
                 success = loadPlugin(plugFolder+plugin[1], plugin[1])
 
         if not success:
-            sendMSG('Plugin "'+plugin[1]+'" failed to load.')
+            sendMSG('Plugin "'+plugin[1]+'" failed to load.', inMSG[1], inMSG[2], inMSG[3])
 
         #If plugin isn't autoloaded ... autoload it ... only if it actually loads
         if not plugin[1] in plugList and len(plugin) == 2 and success:
@@ -101,7 +101,7 @@ def remote_loadProtocol(inMSG):
                 success = loadProtocol(protoFolder+plugin[1], plugin[1])
 
         if not success:
-            sendMSG('Protocol "'+plugin[1]+'" failed to load.')
+            sendMSG('Protocol "'+plugin[1]+'" failed to load.', inMSG[1], inMSG[2], inMSG[3])
 
         #If plugin isn't autoloaded ... autoload it ... only if it actually loads
         if not plugin[1] in protoList and len(plugin) == 2 and success:
