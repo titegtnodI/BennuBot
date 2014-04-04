@@ -20,7 +20,7 @@ def lastfm_lastfm(inMSG):
     return 'Error: %s' % response['message']
 
   if not "track" in response["recenttracks"] or len(response["recenttracks"]["track"]) == 0:
-    return 'No recent tracks for \''+inMSG[1]+'\' found.'
+    return 'No recent tracks for \''+msg[1]+'\' found.'
 
   tracks = response["recenttracks"]["track"]
 
