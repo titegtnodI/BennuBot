@@ -5,7 +5,7 @@ plugAdmins = {'furc':[['titegtnodi',1000]]}
 furc_connections = [['furc://titegtnodi:pho3n1x', 'doop', 'password', ['"Hello everyone!']]]
 
 furc_die = False
-furc_debug = True
+furc_debug = False
 
 ##
 # Removes HTML or XML character references and entities from a text string.
