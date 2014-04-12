@@ -145,10 +145,10 @@ def loadSettings():
         conn.close()
     else:
         log("No db found, making a new one...")
-        protoList = ['irc.py'] #Protocols to be loaded
-        plugList  = ['say.py', 'pyexec.py', 'irc_commands.py', 'time.py', 'google.py', 'downloader.py',
+        protoList = ['skype.py'] #Protocols to be loaded
+        plugList  = ['say.py', 'pyexec.py', 'time.py', 'google.py', 'downloader.py',
                      'remoteadmin.py', 'tell.py', 'loli.py', 'factoids.py'] 
-                               #Plugins to be loaded
+                                 #Plugins to be loaded
 
         protoFolder = 'protocols/'
         plugFolder   = 'plugins/'
@@ -186,12 +186,13 @@ def loadProtocol(location, name):
             log('Protocol \"' + name + '\" must define \'load\'.')
             return False
         protocols = dict(protocols.items() + load().items())
-    except:
+    except Exception as e:
+        print e
         log('Protocol \"' + name + '\" failed to load.')
         return False
     try:
         admins = dict(admins.items() + plugAdmins.items())
-    except:
+    except Exception:
         log('Protocol \"' + name + '\" has not specified any admins.')
     log('Protocol \"' + name + '\" loaded.')
     return True 
@@ -334,26 +335,27 @@ def doCollect(foundTime, lastMSG):
 
     return foundTime, lastMSG
 
-log('Loading Settings...')
-loadSettings()
-log('Loading Protocols...')
-loadProtocols()
-log('Loading Plugins...')
-loadPlugins()
-log('Entering main loop...')
+if __name__ == "__main__":
+    log('Loading Settings...')
+    loadSettings()
+    log('Loading Protocols...')
+    loadProtocols()
+    log('Loading Plugins...')
+    loadPlugins()
+    log('Entering main loop...')
 
-while True:
-    if not change:
-        #General plugins should prepare for "None".
-        handleGenFuncs()
-        #As long as plugins are handling their timeouts properly 30ms should be plenty.
-        time.sleep(mainWait)
-    else:
-        change = False
-    for i in inMSG:
-        if not change: change = True
-        parseCommand(i).start()
-        handleGenFuncs(i)
-        del inMSG[0]
-    if collectGarbage:
-        foundTime, lastMSG = doCollect(foundTime, lastMSG)
+    while True:
+        if not change:
+            #General plugins should prepare for "None".
+            handleGenFuncs()
+            #As long as plugins are handling their timeouts properly 30ms should be plenty.
+            time.sleep(mainWait)
+        else:
+            change = False
+        for i in inMSG:
+            if not change: change = True
+            parseCommand(i).start()
+            handleGenFuncs(i)
+            del inMSG[0]
+        if collectGarbage:
+            foundTime, lastMSG = doCollect(foundTime, lastMSG)
