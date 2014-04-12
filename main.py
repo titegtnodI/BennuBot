@@ -186,13 +186,12 @@ def loadProtocol(location, name):
             log('Protocol \"' + name + '\" must define \'load\'.')
             return False
         protocols = dict(protocols.items() + load().items())
-    except Exception as e:
-        print e
+    except:
         log('Protocol \"' + name + '\" failed to load.')
         return False
     try:
         admins = dict(admins.items() + plugAdmins.items())
-    except Exception:
+    except:
         log('Protocol \"' + name + '\" has not specified any admins.')
     log('Protocol \"' + name + '\" loaded.')
     return True 
