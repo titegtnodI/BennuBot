@@ -1,13 +1,14 @@
 #Depends on XMPPpy
 import xmpp
 plugName = 'XMPP'
-plugAdmins = {'xmpp':[['sum20165069@pvp.net',1000]]}
+plugAdmins = {'xmpp':[['-100004485004612@chat.facebook.com',1000], ['ti.teg.tnod.i@gmail.com',1000]]}
 
-xmpp_connections = [[('chat.na1.lol.riotgames.com', 5223), 'DroffilcTheTinyBlueDog@pvp.net', 'AIR_1k1kInyt8bb', 'xiff']]
+xmpp_connections = [[('chat.facebook.com', 5222), 'xxx.xxxx.x@chat.facebook.com', 'password', 'Pidgin'],
+                    [('gmail.com', 5222), 'bennu.bot@gmail.com', 'password', 'BennuBot']]
 
 xmpp_die = False
 xmpp_roster = []
-xmpp_debug = True
+xmpp_debug = False
 
 class xmpp_sendHandler(threading.Thread):
 
@@ -22,7 +23,6 @@ class xmpp_sendHandler(threading.Thread):
                     localMSG.append(i)
                 for i in xrange(len(localMSG)):
                     if len(localMSG[i]) > 1 and localMSG[i][1] == 'xmpp':
-                        print 'Sent: ' + localMSG[i][3]
                         xmpp_jabber[localMSG[i][2]].send(xmpp.Message(localMSG[i][3], localMSG[i][0]))
                         outMSG.remove(localMSG[i])
 
@@ -35,7 +35,6 @@ def xmpp_message(sess, msg, server):
         if not nick:
             nick = jid.split('@')[0]
         text = msg.getBody()
-        print 'Got: ' + text
         if text:
             inMSG.append([unicode(text), 'xmpp', server, jid, nick, jid])
     except Exception as e:
